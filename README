@@ -1,0 +1,11 @@
+DiPo - An artist web portfolio display
+===================================================
+
+Set-Up
+------
+
+Install Composer:
+
+* `curl -s http://getcomposer.org/installer | /usr/local/bin/php`
+*  `php composer.phar install`
+

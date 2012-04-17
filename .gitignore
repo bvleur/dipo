@@ -1,0 +1,4 @@
+silex.phar
+/log/*
+/vendor/
+/composer.phar
