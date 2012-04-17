@@ -2,9 +2,6 @@
 /* Enable auto-loading the composer-managed dependencies */
 require_once __DIR__.'/../vendor/.composer/autoload.php';
 
-/* Load Silex */
-require_once __DIR__.'/../silex.phar';
-
 /* Load the local configuration */
 require_once __DIR__ . '/config.php';
 
