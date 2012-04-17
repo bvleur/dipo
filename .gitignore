@@ -1,4 +1,5 @@
 silex.phar
+/app/config.php
 /log/*
 /vendor/
 /composer.phar

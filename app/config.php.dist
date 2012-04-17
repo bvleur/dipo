@@ -1,0 +1,8 @@
+<?php
+/**
+ * Per deployment configuration
+ */
+
+/* Only enable following lines while debugging */
+$app['debug'] = true;
+ini_set('display_errors', 1);
