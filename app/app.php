@@ -1,12 +1,13 @@
 <?php
+
 /* Enable auto-loading the composer-managed dependencies */
 require_once __DIR__.'/../vendor/.composer/autoload.php';
 
-/* Load the local configuration */
-require_once __DIR__ . '/config.php';
-
 /* Set-up the Silex application */
 $app = new Silex\Application();
+
+/* Load the local configuration */
+require_once __DIR__ . '/config.php';
 
 /* Register the Twig Template Engine and use a global layout template */
 $app->register(new Silex\Provider\TwigServiceProvider(), array(

@@ -1,0 +1,29 @@
+body {
+  background-image: url('../images/tex2res5-blue.png');
+}
+
+#main-container {
+  background-color: #FFF;
+  margin: 20px auto;
+  width: 900px;
+}
+
+#sidebar {
+  width: 180px;
+  float: left
+}
+
+/* Utility */
+
+/* Clearfix from h5bp.com/q */
+.cf:before, .cf:after {
+    content:"";
+    display:table;
+}
+
+.cf:after {
+    clear:both;
+}
+.cf {
+    zoom:1;
+}

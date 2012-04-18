@@ -1,0 +1,16 @@
+<nav id="sidebar">
+
+{% set last_set_index = null %}
+{% for group in portfolio_groups %}
+
+{% if last_set_index != group.getSetIndex %}
+{% if last_set_index != null %}</ul>{% endif %}
+{% set last_set_index = group.getSetIndex %}
+<ul class="sidebargroup portfolioset">
+{% endif %}
+
+<li><a href="/portfolio/{{ group.code }}">{{ group.name }}</a></li>
+
+{% endfor %}
+</ul>
+</nav>
