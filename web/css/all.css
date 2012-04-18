@@ -13,6 +13,40 @@ body {
   float: left
 }
 
+#sidebar ul {
+  padding: 0 10px;
+}
+
+#main-content {
+  width: 720px;
+  float:left;
+}
+
+figure  {
+  width: 700px;
+  margin: 10px;
+}
+
+figure .elementcontainer {
+  height: 600px;
+  display: table;
+  width: 100%;
+  text-align: center;
+}
+
+figure .element {
+  display: table-cell;
+  vertical-align: middle;
+  margin: 0 auto;
+}
+
+figcaption {
+  text-align: center;
+  background-color: #c5d9ee;
+  padding: 10px;
+  height: 50px;
+}
+
 /* Utility */
 
 /* Clearfix from h5bp.com/q */

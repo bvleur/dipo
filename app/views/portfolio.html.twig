@@ -1,0 +1,19 @@
+{% extends layout %}
+
+{% block content %}
+
+<figure>
+<div class="elementcontainer">
+{% if element.getElementType == 'image' %}
+<div class="element">
+<img width="{{ element.width }}" height="{{ element.height }}" src="{{ app.request.basepath }}/portfolio-content/{{ element.getPublicFilePath }}">
+{% endif %}
+</div>
+</div>
+<figcaption>
+{{ element.description }}
+</figcaption>
+</figure>
+
+
+{% endblock %}

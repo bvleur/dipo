@@ -1,29 +1,11 @@
 <?php
-$app['portfolio'] = $app->share(function () {
-  $portfolio = new Portfolio();
-
-  $pg = new PortfolioGroup('de-zwarte-kat', new DateTime('2011-01-01'), 'De Zwarte Kat');
-  $portfolio->addGroup($pg);
-  $pg = new PortfolioGroup('the-generic-city', new DateTime('2011-02-01'), 'The Generic City');
-  $portfolio->addGroup($pg);
-  $pg = new PortfolioGroup('chips', new DateTime('2010-08-10'), 'Chips');
-  $portfolio->addGroup($pg);
-
-  $pg = new PortfolioGroup('schetsboek', new DateTime('2011-01-01'), 'Schetsboek', 2);
-  $portfolio->addGroup($pg);
-  $pg = new PortfolioGroup('random', new DateTime('2011-02-01'), 'Random', 2);
-  $portfolio->addGroup($pg);
-
-  return $portfolio;
-});
-
 class Portfolio
 {
   private $_groups = array();
 
   public function addGroup(PortfolioGroup $group)
   {
-    $this->_groups[] = $group;
+    $this->_groups[$group->getCode()] = $group;
   }
 
   /**
@@ -44,6 +26,14 @@ class Portfolio
     return $groups;
   }
 
+  public function getGroupByCode($code)
+  {
+    if (!array_key_exists($code, $this->_groups))
+      return null;
+
+    return $this->_groups[$code];
+  }
+
 }
 
 class PortfolioGroup
@@ -53,6 +43,7 @@ class PortfolioGroup
   private $_code;
   private $_created_at;
   private $_name;
+  private $_elements = array();
 
   public function __construct($code, $created_at, $name, $set_index = 1)
   {
@@ -80,6 +71,135 @@ class PortfolioGroup
   public function getCreatedAt()
   {
     return $this->_created_at;
+  }
+
+  public function setDescription($description)
+  {
+    $this->_description = $description;
+  }
+
+  public function getDescription()
+  {
+    return $this->_description;
+  }
+
+  public function addElement($element)
+  {
+    $code = $element->getCode();
+
+    if (array_key_exists($code, $this->_elements))
+      throw new PortfolioDuplicateElementCodeException($group, $element, $this->_elements[$code]);
+
+    $this->_elements[$element->getCode()] = $element;
+    $element->setGroup($this);
+  }
+
+  public function getElement($code)
+  {
+    if (!array_key_exists($code, $this->_elements))
+      return null;
+
+    return $this->_elements[$code];
+  }
+
+  public function getElementCount()
+  {
+    return count($this->_elements);
+  }
+
+  public function getFirstElement() {
+    return reset($this->_elements);
+  }
+
+
+}
+class PortfolioDuplicateElementCodeException extends Exception
+{
+
+  public function __construct($group, $new_element, $existing_element)
+  {
+    // TODO Implement Exception interface
+  }
+
+}
+
+abstract class PortfolioElement
+{
+
+  private $_code;
+  private $_width;
+  private $_height;
+  private $_description;
+  private $_group;
+
+  public function __construct($code, $width, $height)
+  {
+    $this->_code = $code;
+    $this->_width = $width;
+    $this->_height = $height;
+  }
+
+  public function getCode()
+  {
+    return $this->_code;
+  }
+
+  public function getWidth()
+  {
+    return $this->_width;
+  }
+
+  public function getHeight()
+  {
+    return $this->_height;
+  }
+
+  public function setGroup($group)
+  {
+    $this->_group = $group;
+  }
+
+  public function getGroup()
+  {
+    return $this->_group;
+  }
+
+  public function setDescription($description)
+  {
+    $this->_description = $description;
+  }
+
+  public function getDescription()
+  {
+    if ($this->_description !== null)
+      return $this->_description;
+
+    return $this->_group->getDescription();
+  }
+
+}
+
+class PortfolioImage extends PortfolioElement
+{
+
+  public function __construct($width, $height, $description)
+  {
+    parent::__construct($width, $height, $description);
+  }
+
+  public function getElementType()
+  {
+    return 'image';
+  }
+
+  public function getPublicFileExtension()
+  {
+    return 'jpg'; //TODO
+  }
+
+  public function getPublicFilePath()
+  {
+    return $this->getGroup()->getCode() . '/' . $this->getCode() . '.' . $this->getPublicFileExtension();
   }
 
 }

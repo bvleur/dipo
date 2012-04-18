@@ -15,6 +15,12 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
     'twig.class_path' => __DIR__.'/../vendor/twig/lib',
 ));
 
+$app['portfolio'] = $app->share(function () {
+  // Temporarily include hardcoded portfolio objects
+  require_once __DIR__ . '/../portfolio-data.php';
+  return $portfolio;
+});
+
 $app->before(function () use ($app) {
     $app['twig']->addGlobal('layout', $app['twig']->loadTemplate('layout.html.twig'));
 });
