@@ -22,6 +22,7 @@ $app->get('/portfolio/{group}/{element}', function ($group, $element) use ($app)
   /* The index from the URL is user-facing and thus 1-based */
   return $app['twig']->render('portfolio.html.twig', array(
     'browsing' => $group,
+    'index' => $group->getIndexOfElement($element),
     'element' => $element
   ));
 })->convert('group', array($app['portfolio'], 'getGroupByCode'));

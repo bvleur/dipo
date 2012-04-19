@@ -12,7 +12,10 @@
 <body>
 
 <div id="main-container" class="cf">
-  <img src="{{ app.request.basepath }}/images/header.png">
+  <div class="cf" id="topbar">
+    <!-- <img align="right" src="{{ app.request.basepath }}/images/header.png"> -->
+    <span style="display: block; text-align: center; padding: 20px 0 20px 200px; color: #000077; font-size: 32pt;">Digital Portfolio</span>
+  </div>
   {{ render('/sidebar') }}
   <div id="main-content">
     {% block content %}{% endblock %}

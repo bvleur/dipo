@@ -7,9 +7,22 @@
 {% if element.getElementType == 'image' %}
 <div class="element">
 <img width="{{ element.width }}" height="{{ element.height }}" src="{{ app.request.basepath }}/portfolio-content/{{ element.getPublicFilePath }}">
+</div>
 {% endif %}
 </div>
-</div>
+
+<nav class="dot-nav">
+<ul>
+  {% for el in browsing.elements %}
+  {% if el is sameas(element) %}
+  <li>O</li>
+  {% else %}
+  <li><a href="{{ el.code }}">o</a></li>
+  {% endif %}
+  {% endfor %}
+</ul>
+</nav>
+
 <figcaption>
 {{ element.description }}
 </figcaption>

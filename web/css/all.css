@@ -39,12 +39,29 @@ figure .element {
   vertical-align: middle;
   margin: 0 auto;
 }
+figure .element img {
+  border: 1px solid silver;
+}
 
 figcaption {
-  text-align: center;
-  background-color: #c5d9ee;
+  text-align: left;
+  background-color: #d4dfdf;
   padding: 10px;
   height: 50px;
+}
+
+.dot-nav {
+  text-align: center;
+}
+
+.dot-nav ul {
+  padding: 0;
+}
+
+.dot-nav li {
+  display: inline-block;
+  padding: 0 5px;
+
 }
 
 /* Utility */

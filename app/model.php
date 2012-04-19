@@ -94,6 +94,11 @@ class PortfolioGroup
     $element->setGroup($this);
   }
 
+  public function getElements()
+  {
+    return $this->_elements;
+  }
+
   public function getElement($code)
   {
     if (!array_key_exists($code, $this->_elements))
@@ -107,12 +112,22 @@ class PortfolioGroup
     return count($this->_elements);
   }
 
-  public function getFirstElement() {
+  public function getFirstElement()
+  {
     return reset($this->_elements);
   }
 
+  public function getIndexOfElement($element)
+  {
+    $keys = array_flip(array_keys($this->_elements));
+    if (!array_key_exists($element->getCode(), $keys))
+      return null;
+
+    return $keys[$element->getCode()];
+  }
 
 }
+
 class PortfolioDuplicateElementCodeException extends Exception
 {
 
