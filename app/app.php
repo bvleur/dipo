@@ -25,6 +25,10 @@ $app->before(function () use ($app) {
     $app['twig']->addGlobal('layout', $app['twig']->loadTemplate('layout.html.twig'));
 });
 
+/* Register and start the Session Service */
+$app->register(new Silex\Provider\SessionServiceProvider());
+$app['session']->start();
+
 /* Load the controller definitions */
 require_once __DIR__ . '/controllers.php';
 
