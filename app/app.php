@@ -1,7 +1,7 @@
 <?php
 
 /* Enable auto-loading the composer-managed dependencies */
-require_once __DIR__.'/../vendor/.composer/autoload.php';
+require_once __DIR__.'/../vendor/autoload.php';
 
 /* Set-up the Silex application */
 $app = new Silex\Application();
