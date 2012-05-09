@@ -1,5 +1,5 @@
 {
-    "hash": "e816ce1de8c44189236570c826645b30",
+    "hash": "fc8e33764f1cf5cc921269d89ef2fc0a",
     "packages": [
         {
             "package": "pimple/pimple",
@@ -69,6 +69,12 @@
             "package": "symfony/routing",
             "version": "dev-master",
             "source-reference": "b6c2bafae0cf8a557d719598a4a462676c3d04bd",
+            "alias": "2.1.9999999.9999999-dev"
+        },
+        {
+            "package": "symfony/yaml",
+            "version": "dev-master",
+            "source-reference": "48fcffece8de2ade6f6dbc909f22444356b7659f",
             "alias": "2.1.9999999.9999999-dev"
         },
         {
