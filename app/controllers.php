@@ -1,6 +1,4 @@
 <?php
-require_once(__DIR__ . '/model.php');
-
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -78,10 +76,8 @@ $app->get('/admin', function () use ($app) {
 })->middleware($must_be_logged_in);
 
 $app->get('/admin/bijwerken', function () use ($app) {
-  require_once 'PortfolioUpdater.php'; //TODO consider autoloading
-
   if (!$app['session']->has('portfolio_updater')) {
-    $portfolio_updater = new PortfolioUpdater($app);
+    $portfolio_updater = new Dipo\PortfolioUpdater($app);
     $app['session']->set('portfolio_updater', $portfolio_updater);
   } else {
     $portfolio_updater = $app['session']->get('portfolio_updater');
@@ -98,8 +94,6 @@ $app->get('/admin/bijwerken', function () use ($app) {
 })->middleware($must_be_logged_in);
 
 $app->get('/admin/bijwerken/annuleren', function () use ($app) {
-  require_once 'PortfolioUpdater.php'; //TODO consider autoloading
-
   $app['session']->remove('portfolio_updater');
   return $app->redirect('/admin');
 })->middleware($must_be_logged_in);

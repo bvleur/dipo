@@ -1,4 +1,6 @@
 <?php
+namespace Dipo;
+
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Yaml\Exception\ParseException;
@@ -13,6 +15,7 @@ class PortfolioUpdater
   private $completed;
   private $total;
   private $is_done;
+  private $portfolio;
 
   /* processing internal state */
   private $metadata = array();
@@ -84,7 +87,7 @@ class PortfolioUpdater
 
     $this->completed = 0;
     $this->is_done = false;
-    $this->portfolio = new Portfolio();
+    $this->portfolio = new Model\Portfolio();
   }
 
   /**
@@ -143,7 +146,7 @@ class PortfolioUpdater
 
   private function createGroup($code, $metadata)
   {
-    $group = new PortfolioGroup(
+    $group = new Model\PortfolioGroup(
       $code,
       $this->metadataGet(true, $metadata, 'created-at', 'DateTime'),
       $this->metadataGet(true, $metadata, 'title')
@@ -159,7 +162,7 @@ class PortfolioUpdater
     $width = 500;
     $height = 600;
 
-    $image = new PortfolioImage($code, $width, $height);
+    $image = new Model\PortfolioImage($code, $width, $height);
     $image->setDescription($this->metadataGet(false, $metadata, 'description'));
 
     return $image;
@@ -180,7 +183,7 @@ class PortfolioUpdater
       return $value;
     case 'DateTime':
       // TODO Figure out error handling.
-      return new DateTime($value);
+      return new \DateTime($value);
     }
   }
 
