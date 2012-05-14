@@ -78,22 +78,21 @@ $app->get('/admin', function () use ($app) {
 })->middleware($mustBeLoggedIn);
 
 $app->get('/admin/bijwerken', function () use ($app) {
-  require_once 'PortfolioUpdater.php';
-
-  $app['session']->remove('portfolio_updater');
+  require_once 'PortfolioUpdater.php'; //TODO consider autoloading
 
   if (!$app['session']->has('portfolio_updater')) {
     $portfolio_updater = new PortfolioUpdater($app);
-    $portfolio_updater->process(30);
-//    $app['session']->set('portfolio_updater', $portfolio_updater);
+    $app['session']->set('portfolio_updater', $portfolio_updater);
   } else {
     $portfolio_updater = $app['session']->get('portfolio_updater');
-    // continue processing
+    $portfolio_updater->process(30);
   }
   var_dump($portfolio_updater);
 
   return $app['twig']->render('update.html.twig', array(
     'user' => $app['session']->get('user'),
-    'updater' => $portfolio_updater
+    'total' => $portfolio_updater->getTotal(),
+    'completed' => $portfolio_updater->getCompleted(),
+    'done' => $portfolio_updater->isDone()
   ));
 })->middleware($mustBeLoggedIn);

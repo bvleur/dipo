@@ -5,6 +5,7 @@ use Symfony\Component\Yaml\Exception\ParseException;
 
 class PortfolioUpdater
 {
+  /* configuration */
   private $content_path;
 
   /* processing public state */
@@ -46,9 +47,20 @@ class PortfolioUpdater
     return $this->is_done;
   }
 
+  public function getCompleted()
+  {
+    return $this->completed;
+  }
+
+  public function getTotal()
+  {
+    return $this->total;
+  }
+
   private function start()
   {
     /* Read all portfolio.yml files and keep the path-names */
+    $this->total = 0; // Element count
     $finder = new Finder();
     $finder->in($this->content_path)->name('portfolio.yml');
 
@@ -63,13 +75,14 @@ class PortfolioUpdater
         $group_metadata = $yaml->parse($file_content);
 
         $this->metadata[$file->getRelativePath()] = $group_metadata;
+
+        $this->total += count($group_metadata['elements']);
       } catch (ParseException $e) {
         return $this->fail('Malformatted portfolio.yml in content folder ' . $file->getRelativePath() . ":\n" . $e->getMessage());
       }
     }
 
     $this->completed = 0;
-    //$this->total = 0;
     $this->is_done = false;
     $this->portfolio = new Portfolio();
   }
@@ -110,6 +123,8 @@ class PortfolioUpdater
 
       $element = $this->createImage($this->group, $element_code, $element_metadata);
       $this->group->addElement($element);
+
+      $this->completed++;
 
       /* Continue with next element */
       if ($this->element_index + 1 < count($group_metadata['elements'])) {

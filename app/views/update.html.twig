@@ -5,4 +5,10 @@
 <p>Ingelogd als: {{ user.username }}</p>
 <h1>Bijwerken</h1>
 
+<progress value="{{ completed }}" max="{{ total }}">{{ completed // total }}</progress>
+
+{% if not done %}
+<script>//window.location.reload(true/* force get */);</script>
+{% endif %}
+
 {% endblock %}
