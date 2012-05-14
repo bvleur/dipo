@@ -63,7 +63,7 @@ $app->get('/login', function () use ($app) {
 });
 
 /* Utillity function that redirects users that are not logged in  */
-$mustBeLoggedIn = function (Request $request) use ($app) {
+$must_be_logged_in = function (Request $request) use ($app) {
   if (!$app['session']->has('user')) {
     return $app->redirect('/login');
   }
@@ -75,7 +75,7 @@ $app->get('/admin', function () use ($app) {
   return $app['twig']->render('admin.html.twig', array(
     'user' => $user
   ));
-})->middleware($mustBeLoggedIn);
+})->middleware($must_be_logged_in);
 
 $app->get('/admin/bijwerken', function () use ($app) {
   require_once 'PortfolioUpdater.php'; //TODO consider autoloading
@@ -95,4 +95,4 @@ $app->get('/admin/bijwerken', function () use ($app) {
     'completed' => $portfolio_updater->getCompleted(),
     'done' => $portfolio_updater->isDone()
   ));
-})->middleware($mustBeLoggedIn);
+})->middleware($must_be_logged_in);
