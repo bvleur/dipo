@@ -96,3 +96,10 @@ $app->get('/admin/bijwerken', function () use ($app) {
     'done' => $portfolio_updater->isDone()
   ));
 })->middleware($must_be_logged_in);
+
+$app->get('/admin/bijwerken/annuleren', function () use ($app) {
+  require_once 'PortfolioUpdater.php'; //TODO consider autoloading
+
+  $app['session']->remove('portfolio_updater');
+  return $app->redirect('/admin');
+})->middleware($must_be_logged_in);
