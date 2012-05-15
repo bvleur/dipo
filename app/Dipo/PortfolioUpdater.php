@@ -97,7 +97,7 @@ class PortfolioUpdater
     /* Read all portfolio.yml files and keep the path-names */
     $this->total = 0; // Element count
     $finder = new Finder();
-    $finder->in($this->content_path)->name('portfolio.yml');
+    $finder->in($this->content_path)->depth(1)->name('portfolio.yml');
 
     $yaml = new Yaml();
     foreach ($finder as $file) {
@@ -120,6 +120,10 @@ class PortfolioUpdater
         return $this->fail('Malformatted portfolio.yml in content folder ' . $file->getRelativePath() . ":\n" . $e->getMessage());
       }
     }
+
+    // TODO Warn on depth > 1 folders and files
+    // TODO Warn on folders without portfolio.yml
+    // TODO Warn portfolio.yml in content root
 
     /* Initialize processing progress and result */
     $this->completed = 0;
