@@ -18,7 +18,7 @@ use Symfony\Component\Yaml\Exception\ParseException;
  *   browser without timing out, the intensive work can be processed in multiple calls.
  *
  *   For the first run you can construct a new PorfolioUpdater object, inject
- *   dependencies and call start().
+ *   dependencies and call process(..).
  *
  *   For subsequent processing, you call process(..) with a number of seconds
  *   for the maximum processing time. This should be called at least once,
@@ -27,7 +27,7 @@ use Symfony\Component\Yaml\Exception\ParseException;
  *   the dependencies must be re-injected (to reduce the serialized-size).
  *
  * Dependencies:
- *   Before calling start() or process() an Imagine instance should be set using setImagine()
+ *   Before calling process() an Imagine instance should be set using setImagine()
  */
 class PortfolioUpdater
 {
@@ -82,7 +82,7 @@ class PortfolioUpdater
     return $this->total;
   }
 
-  public function start()
+  private function scan()
   {
     /* Read all portfolio.yml files and keep the path-names */
     $this->total = 0; // Element count
@@ -125,12 +125,6 @@ class PortfolioUpdater
     // TODO Warn on folders without portfolio.yml
     // TODO Warn portfolio.yml in content root
 
-    /* Initialize processing progress and result */
-    $this->completed = 0;
-    $this->is_done = false;
-    $this->portfolio = new Model\Portfolio();
-    $this->metadata_group_codes = array_keys($this->metadata);
-    $this->group_index = 0;
   }
 
   /**
@@ -140,6 +134,20 @@ class PortfolioUpdater
   public function process($maximum_processing_time)
   {
     $timeout_at = microtime(true) + ($maximum_processing_time);
+
+    if (!isset($this->group_index)) {
+      $this->scan();
+
+      /* Initialize processing progress and result */
+      $this->completed = 0;
+      $this->is_done = false;
+      $this->portfolio = new Model\Portfolio();
+      $this->group_index = 0;
+      $this->metadata_group_codes = array_keys($this->metadata);
+
+      /* To ensure the caller can supply the end user with progress information quickly, return early */
+      return;
+    }
 
     /* Keep processing elements if we haven't reached the time-out and are not done yet */
     while ((microtime(true) < $timeout_at) && !$this->isDone()) {

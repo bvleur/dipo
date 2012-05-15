@@ -86,20 +86,16 @@ $app->get('/admin/bijwerken', function () use ($app) {
       $app['maximum_height']
     );
     $app['session']->set('portfolio_updater', $portfolio_updater);
-    $portfolio_updater->setImagine($app['imagine']);
-    try {
-      $portfolio_updater->start();
-    } catch (Dipo\PortfolioUpdaterException $pue) {
-      $failure = $pue;
-    }
   } else {
     $portfolio_updater = $app['session']->get('portfolio_updater');
-    $portfolio_updater->setImagine($app['imagine']);
-    try {
-      $portfolio_updater->process($app['updater.processing_step_seconds']);
-    } catch (Dipo\PortfolioUpdaterException $pue) {
-      $failure = $pue;
-    }
+  }
+
+  $portfolio_updater->setImagine($app['imagine']);
+
+  try {
+    $portfolio_updater->process($app['updater.processing_step_seconds']);
+  } catch (Dipo\PortfolioUpdaterException $pue) {
+    $failure = $pue;
   }
 
   /* If the portfolio updater is done, we can forget */
