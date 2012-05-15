@@ -5,11 +5,35 @@ use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Yaml\Exception\ParseException;
 
+/**
+ * Updates the portfolio:
+ *  - Use the content and meta-data in the content path
+ *  - Populate the portfolio web path with the content
+ *  - Generate a matching Dipo\Model\Portfolio from the content
+ *  - Write out a serialized version of this model in the web path
+ *
+ * Usage:
+ *   To facillitate updating the portfolio in response to HTTP request from a
+ *   browser without timing out, the intensive work can be processed in multiple calls.
+ *
+ *   For the first run you can construct a new PorfolioUpdater object, inject
+ *   dependencies and call start().
+ *
+ *   For subsequent processing, you call process(..) with a number of seconds
+ *   for the maximum processing time. This should be called at least once,
+ *   until isDone() returns true. To resume processing in a new request, you
+ *   can serialize an unserialize the updater. After unserializing the
+ *   dependencies must be re-injected (to reduce the serialized-size).
+ *
+ * Dependencies:
+ *   Before calling start() or process() an Imagine instance should be set using setImagine()
+ */
 class PortfolioUpdater
 {
   /* configuration */
   private $content_path;
   private $web_path;
+  private $imagine;
 
   /* processing public state */
   private $fail_reason;
@@ -24,17 +48,20 @@ class PortfolioUpdater
   private $group_index;
   private $element_index;
 
-  public function __construct($app)
+  public function __construct($content_path, $web_path)
   {
-    /* We don't keep the $app instance (DI Container) in a member variable 
-     * because we don't want to serialize the entire container.
-     *
-     * So we just keep what we need.
-     */
-    $this->content_path = $app['content_path'];
-    $this->web_path = $app['web_path'];
+    $this->content_path = $content_path;
+    $this->web_path = $web_path;
+  }
 
-    $this->start();
+  public function setImagine(\Imagine\Image\ImagineInterface $imagine)
+  {
+    $this->imagine = $imagine;
+  }
+
+  private function __sleep()
+  {
+    unset($this->imagine);
   }
 
   public function hasFailed()
@@ -62,7 +89,7 @@ class PortfolioUpdater
     return $this->total;
   }
 
-  private function start()
+  public function start()
   {
     /* Read all portfolio.yml files and keep the path-names */
     $this->total = 0; // Element count
@@ -162,11 +189,14 @@ class PortfolioUpdater
 
   private function createImage($group, $code, $metadata)
   {
-    /* TODO Actually process JPEG */
-    $width = 500;
-    $height = 600;
+    $extension = 'jpg'; // TODO Support other file-types
+    $filepath = $this->content_path . '/'. $group->getCode() . '/' . $code . '.' . $extension;
 
-    $image = new Model\PortfolioImage($code, $width, $height);
+    $image = $this->imagine->open($filepath);
+
+    $size = $image->getSize();
+
+    $image = new Model\PortfolioImage($code, $size->getWidth(), $size->getHeight());
     $image->setDescription($this->metadataGet(false, $metadata, 'description'));
 
     return $image;
