@@ -45,6 +45,7 @@ class PortfolioUpdater
 
   /* processing internal state */
   private $metadata = array();
+  private $metadata_group_codes = array(); // Utillity look-up array for indices to group codes
   private $group;
   private $group_index;
   private $element_index;
@@ -129,6 +130,8 @@ class PortfolioUpdater
     $this->completed = 0;
     $this->is_done = false;
     $this->portfolio = new Model\Portfolio();
+    $this->metadata_group_codes = array_keys($this->metadata);
+    $this->group_index = 0;
   }
 
   /**
@@ -139,25 +142,16 @@ class PortfolioUpdater
   {
     $timeout_at = microtime(true) + ($maximum_processing_time);
 
-    /* Utillity look-up array for indices to group codes */
-    $metadata_group_codes = array_keys($this->metadata);
-
-    /* If processing was paused before we can continue at the element that was
-     * marked to be processed. Otherwise intialize the state at the first element */
-    if (!isset($this->group_index)) {
-      $this->group_index = 0;
-      $this->element_index = 0;
-    }
-
     /* Keep processing elements if we haven't reached the time-out and are not done yet */
     while ((microtime(true) < $timeout_at) && !$this->isDone()) {
-      $group_code = $metadata_group_codes[$this->group_index];
+      $group_code = $this->metadata_group_codes[$this->group_index];
       $group_metadata = $this->metadata[$group_code];
 
       /* Create group (if we are a the first element) */
-      if ($this->element_index == 0) {
+      if (!isset($this->element_index)) {
         $this->group = $this->createGroup($group_code, $group_metadata);
         $this->portfolio->addGroup($this->group);
+        $this->element_index = 0;
       }
 
       /* Process element */
@@ -175,12 +169,12 @@ class PortfolioUpdater
         $this->element_index++;
       } else {
         /* This group is done, go to next group (if any) */
+        unset($this->element_index);
         if ($this->group_index + 1 < count($this->metadata)) {
           $this->group_index++;
-          $this->element_index = 0;
         } else {
           unset($this->group_index);
-          unset($this->element_index);
+          unset($this->group);
           $this->finish();
         }
       }
@@ -237,8 +231,20 @@ class PortfolioUpdater
   private function metadataGet($required, $data, $key, $type = 'string')
   {
     if ($required && !array_key_exists($key, $data)) {
-      $this->fail('Missing required "' . $key . '"');
-      return null;
+      if (!isset($this->element_index)) {
+        /* Processing a group */
+        return $this->fail(strtr("Missing required '%key%' for group '%group%'", array(
+          '%key%' => $key,
+          '%group%' => $this->metadata_group_codes[$this->group_index]
+        )));
+      } else {
+        /* Processing an element */
+        return $this->fail(strtr("Missing required '%key%' for element '%element%' in group '%group%'", array(
+          '%key%' => $key,
+          '%group%' => $this->group->getCode(),
+          '%element%' => $this->element_index
+        )));
+      }
     }
 
     $value = $data[$key];
