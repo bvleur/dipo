@@ -91,7 +91,7 @@ $app->get('/admin/bijwerken', function () use ($app) {
   } else {
     $portfolio_updater = $app['session']->get('portfolio_updater');
     $portfolio_updater->setImagine($app['imagine']);
-    $portfolio_updater->process(30); // 30 seconds
+    $portfolio_updater->process($app['updater.processing_step_seconds']);
   }
 
   /* If the portfolio updater is done, we can forget */

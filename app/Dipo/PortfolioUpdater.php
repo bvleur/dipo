@@ -128,14 +128,14 @@ class PortfolioUpdater
    */
   public function process($maximum_processing_time)
   {
-    $timeout_at = microtime(true) + ($maximum_processing_time * 1000);
+    $timeout_at = microtime(true) + ($maximum_processing_time);
 
     /* Utillity look-up array for indices to group codes */
     $metadata_group_codes = array_keys($this->metadata);
 
     /* If processing was paused before we can continue at the element that was
      * marked to be processed. Otherwise intialize the state at the first element */
-    if (!isset($this->_group_index)) {
+    if (!isset($this->group_index)) {
       $this->group_index = 0;
       $this->element_index = 0;
     }
