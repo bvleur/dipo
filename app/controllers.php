@@ -95,14 +95,16 @@ $app->get('/admin/bijwerken', function () use ($app) {
   }
 
   /* If the portfolio updater is done, we can forget */
-  if ($portfolio_updater->isDone())
+  if ($portfolio_updater->isDone() || $portfolio_updater->hasFailed())
     $app['session']->remove('portfolio_updater');
 
   return $app['twig']->render('update.html.twig', array(
     'user' => $app['session']->get('user'),
     'total' => $portfolio_updater->getTotal(),
     'completed' => $portfolio_updater->getCompleted(),
-    'done' => $portfolio_updater->isDone()
+    'is_done' => $portfolio_updater->isDone(),
+    'has_failed' => $portfolio_updater->hasFailed(),
+    'fail_reason' => $portfolio_updater->getFailReason()
   ));
 })->middleware($must_be_logged_in);
 

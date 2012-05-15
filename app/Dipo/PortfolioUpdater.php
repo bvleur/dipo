@@ -22,9 +22,9 @@ use Symfony\Component\Yaml\Exception\ParseException;
  *
  *   For subsequent processing, you call process(..) with a number of seconds
  *   for the maximum processing time. This should be called at least once,
- *   until isDone() returns true. To resume processing in a new request, you
- *   can serialize an unserialize the updater. After unserializing the
- *   dependencies must be re-injected (to reduce the serialized-size).
+ *   until isDone() or hasFailed() returns true. To resume processing in a new
+ *   request, you can serialize an unserialize the updater. After unserializing
+ *   the dependencies must be re-injected (to reduce the serialized-size).
  *
  * Dependencies:
  *   Before calling start() or process() an Imagine instance should be set using setImagine()
@@ -102,6 +102,10 @@ class PortfolioUpdater
     $yaml = new Yaml();
     foreach ($finder as $file) {
       try {
+        $group_code = $file->getRelativePath();
+        if (urlencode($group_code) != $group_code)
+          return $this->fail(sprintf('Folder name %s contains characters that are not supported', $group_code));
+
         $file_content = file_get_contents($file->getPathname());
         if ($file_content === false) {
           return $this->fail('Could not read portfolio.yml in content folder ' . $file->getRelativePath());
@@ -117,6 +121,7 @@ class PortfolioUpdater
       }
     }
 
+    /* Initialize processing progress and result */
     $this->completed = 0;
     $this->is_done = false;
     $this->portfolio = new Model\Portfolio();
