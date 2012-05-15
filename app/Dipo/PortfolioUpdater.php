@@ -219,9 +219,27 @@ class PortfolioUpdater
     $extension = 'jpg'; // TODO Support other file-types
     $content_filepath = $this->content_path . '/'. $group->getCode() . '/' . $code . '.' . $extension;
 
+    if (!is_file($content_filepath))
+      throw new PortfolioUpdaterException(array(
+        'action' => 'content-image',
+        'error' => 'file-missing',
+        'group' => $group->getCode(),
+        'element' => $code,
+      ));
+
     $web_filepath = $this->web_path . '/portfolio-content/' . $group->getCode() . '/' . $code . '.' .$extension;
 
-    $content_image = $this->imagine->open($content_filepath);
+    try {
+      $content_image = $this->imagine->open($content_filepath);
+    } catch (\Imagine\Exception\InvalidArgumentException $e) {
+      throw new PortfolioUpdaterException(array(
+        'action' => 'content-image',
+        'error' => 'open-error',
+        'group' => $group->getCode(),
+        'element' => $code,
+        'exception_message' => $e->getMessage()
+      ));
+    }
 
     $size = $content_image->getSize();
 
