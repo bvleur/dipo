@@ -22,7 +22,7 @@ use Symfony\Component\Yaml\Exception\ParseException;
  *
  *   For subsequent processing, you call process(..) with a number of seconds
  *   for the maximum processing time. This should be called at least once,
- *   until isDone() or hasFailed() returns true. To resume processing in a new
+ *   until isDone() or an exception is thrown. To resume processing in a new
  *   request, you can serialize an unserialize the updater. After unserializing
  *   the dependencies must be re-injected (to reduce the serialized-size).
  *
@@ -37,7 +37,6 @@ class PortfolioUpdater
   private $imagine;
 
   /* processing public state */
-  private $fail_reason;
   private $completed;
   private $total;
   private $is_done;
@@ -68,16 +67,6 @@ class PortfolioUpdater
     unset($this->imagine);
   }
 
-  public function hasFailed()
-  {
-    return isset($this->fail_reason);
-  }
-
-  public function getFailReason()
-  {
-    return $this->fail_reason;
-  }
-
   public function isDone()
   {
     return $this->is_done;
@@ -105,11 +94,17 @@ class PortfolioUpdater
       try {
         $group_code = $file->getRelativePath();
         if (urlencode($group_code) != $group_code)
-          return $this->fail(sprintf('Folder name %s contains characters that are not supported', $group_code));
+          throw new PortfolioUpdaterException(array(
+            'action' => 'scan-folders',
+            'error' => 'unsupported-characters',
+            'path' => $group_code));
 
         $file_content = file_get_contents($file->getPathname());
         if ($file_content === false) {
-          return $this->fail('Could not read portfolio.yml in content folder ' . $file->getRelativePath());
+          throw new PortfolioUpdaterException(array(
+            'action' => 'scan-folders',
+            'error' => 'cant-read-metadata-file',
+            'path' => $group_code));
         }
 
         $group_metadata = $yaml->parse($file_content);
@@ -118,7 +113,11 @@ class PortfolioUpdater
 
         $this->total += count($group_metadata['elements']);
       } catch (ParseException $e) {
-        return $this->fail('Malformatted portfolio.yml in content folder ' . $file->getRelativePath() . ":\n" . $e->getMessage());
+        throw new PortfolioUpdaterException(array(
+          'action' => 'scan-folders',
+          'error' => 'cant-read-metadata-file',
+          'path' => $group_code,
+          'exception_message' => $e->getMessage()));
       }
     }
 
@@ -183,12 +182,19 @@ class PortfolioUpdater
 
   private function createGroup($code, $metadata)
   {
-    $group = new Model\PortfolioGroup(
-      $code,
-      $this->metadataGet(true, $metadata, 'created-at', 'DateTime'),
-      $this->metadataGet(true, $metadata, 'title')
-    );
-    $group->setDescription($this->metadataGet(true, $metadata, 'description'));
+    try {
+      $group = new Model\PortfolioGroup(
+        $code,
+        $this->metadataGet(true, $metadata, 'created-at', 'DateTime'),
+        $this->metadataGet(true, $metadata, 'title')
+      );
+      $group->setDescription($this->metadataGet(true, $metadata, 'description'));
+    } catch (PortfolioUpdaterException $pue) {
+      throw $pue->addDetails(array(
+        'action' => 'metadata-group',
+        'group' => $code
+      ));
+    }
 
     return $group;
   }
@@ -223,7 +229,16 @@ class PortfolioUpdater
     }
 
     $image = new Model\PortfolioImage($code, $size->getWidth(), $size->getHeight());
-    $image->setDescription($this->metadataGet(false, $metadata, 'description'));
+
+    try {
+      $image->setDescription($this->metadataGet(false, $metadata, 'description'));
+    } catch (PortfolioUpdaterException $pue) {
+      throw $pue->addDetails(array(
+        'action' => 'metadata-element',
+        'group' => $group->getCode(),
+        'element' => $code
+      ));
+    }
 
     return $image;
   }
@@ -231,20 +246,11 @@ class PortfolioUpdater
   private function metadataGet($required, $data, $key, $type = 'string')
   {
     if ($required && !array_key_exists($key, $data)) {
-      if (!isset($this->element_index)) {
-        /* Processing a group */
-        return $this->fail(strtr("Missing required '%key%' for group '%group%'", array(
-          '%key%' => $key,
-          '%group%' => $this->metadata_group_codes[$this->group_index]
-        )));
-      } else {
-        /* Processing an element */
-        return $this->fail(strtr("Missing required '%key%' for element '%element%' in group '%group%'", array(
-          '%key%' => $key,
-          '%group%' => $this->group->getCode(),
-          '%element%' => $this->element_index
-        )));
-      }
+      throw new PortfolioUpdaterException(array(
+        'error' => 'missing',
+        'key' => $key,
+        'data_type' => $type
+      ));
     }
 
     $value = $data[$key];
@@ -271,11 +277,6 @@ class PortfolioUpdater
       LOCK_EX
     );
     $this->is_done = true;
-  }
-
-  private function fail($reason)
-  {
-    $this->fail_reason = $reason;
   }
 
 }

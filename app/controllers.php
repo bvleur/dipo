@@ -87,25 +87,34 @@ $app->get('/admin/bijwerken', function () use ($app) {
     );
     $app['session']->set('portfolio_updater', $portfolio_updater);
     $portfolio_updater->setImagine($app['imagine']);
-    $portfolio_updater->start();
+    try {
+      $portfolio_updater->start();
+    } catch (Dipo\PortfolioUpdaterException $pue) {
+      $failure = $pue;
+    }
   } else {
     $portfolio_updater = $app['session']->get('portfolio_updater');
     $portfolio_updater->setImagine($app['imagine']);
-    $portfolio_updater->process($app['updater.processing_step_seconds']);
+    try {
+      $portfolio_updater->process($app['updater.processing_step_seconds']);
+    } catch (Dipo\PortfolioUpdaterException $pue) {
+      $failure = $pue;
+    }
   }
 
   /* If the portfolio updater is done, we can forget */
-  if ($portfolio_updater->isDone() || $portfolio_updater->hasFailed())
+  if ($portfolio_updater->isDone() || isset($failure)) {
     $app['session']->remove('portfolio_updater');
+  }
 
-  return $app['twig']->render('update.html.twig', array(
-    'user' => $app['session']->get('user'),
-    'total' => $portfolio_updater->getTotal(),
-    'completed' => $portfolio_updater->getCompleted(),
-    'is_done' => $portfolio_updater->isDone(),
-    'has_failed' => $portfolio_updater->hasFailed(),
-    'fail_reason' => $portfolio_updater->getFailReason()
-  ));
+  return $app['twig']->render('update.html.twig',
+    array(
+      'user' => $app['session']->get('user'),
+      'total' => $portfolio_updater->getTotal(),
+      'completed' => $portfolio_updater->getCompleted(),
+      'is_done' => $portfolio_updater->isDone(),
+      'failure' => isset($failure) ? $failure->getDetails() : false
+    ));
 })->middleware($must_be_logged_in);
 
 $app->get('/admin/bijwerken/annuleren', function () use ($app) {

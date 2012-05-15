@@ -7,15 +7,16 @@
 
 <progress value="{{ completed }}" max="{{ total }}">{{ (completed // total) * 100 }}%</progress>
 
-{% if not is_done and not has_failed %}
+{% if not is_done and not failure %}
 <form method="get" action="annuleren" class="progress_cancel">
   <input type="submit" value="Annuleren">
 </form>
 <script>window.location.reload(true/* force get */);</script>
-{% elseif has_failed %}
+{% elseif failure %}
 <h2>Mislukt</h2>
 <p>
-{{fail_reason}}
+{{failure.action}} -
+{{failure.error}}
 </p>
 {% elseif is_done %}
 <p>
