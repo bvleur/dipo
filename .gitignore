@@ -2,5 +2,4 @@
 /log/*
 /vendor/
 /composer.phar
-/portfolio-data.php
 /web/portfolio-content/*

@@ -16,9 +16,10 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
     'twig.class_path' => __DIR__.'/../vendor/twig/lib',
 ));
 
-$app['portfolio'] = $app->share(function () {
-  // Temporarily include hardcoded portfolio objects
-  require_once __DIR__ . '/../portfolio-data.php';
+$app['portfolio'] = $app->share(function ($app) {
+  $database_file = file($app['web_path'] . '/portfolio-content/database.php');
+  // TODO Handle errors (missing database, damaged file)
+  $portfolio = unserialize(base64_decode($database_file[1]));
   return $portfolio;
 });
 
