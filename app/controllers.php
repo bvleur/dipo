@@ -79,7 +79,12 @@ $app->get('/admin/bijwerken', function () use ($app) {
   /* Start a new updater or continue with a running one */
   // TODO Prevent concurrent runs (due to user interruption): use locking
   if (!$app['session']->has('portfolio_updater')) {
-    $portfolio_updater = new Dipo\PortfolioUpdater($app['content_path'], $app['web_path']);
+    $portfolio_updater = new Dipo\PortfolioUpdater(
+      $app['content_path'],
+      $app['web_path'],
+      $app['maximum_width'],
+      $app['maximum_height']
+    );
     $app['session']->set('portfolio_updater', $portfolio_updater);
     $portfolio_updater->setImagine($app['imagine']);
     $portfolio_updater->start();

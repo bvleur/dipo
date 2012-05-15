@@ -2,6 +2,7 @@
 namespace Dipo;
 
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Yaml\Exception\ParseException;
 
@@ -48,10 +49,12 @@ class PortfolioUpdater
   private $group_index;
   private $element_index;
 
-  public function __construct($content_path, $web_path)
+  public function __construct($content_path, $web_path, $maximum_width, $maximum_height)
   {
     $this->content_path = $content_path;
     $this->web_path = $web_path;
+    $this->maximum_width = $maximum_width;
+    $this->maximum_height = $maximum_height;
   }
 
   public function setImagine(\Imagine\Image\ImagineInterface $imagine)
@@ -187,14 +190,34 @@ class PortfolioUpdater
     return $group;
   }
 
+  private function getMaximumBox()
+  {
+    return new \Imagine\Image\Box($this->maximum_width, $this->maximum_height);
+  }
+
   private function createImage($group, $code, $metadata)
   {
+    $filesystem = new Filesystem();
+
     $extension = 'jpg'; // TODO Support other file-types
-    $filepath = $this->content_path . '/'. $group->getCode() . '/' . $code . '.' . $extension;
+    $content_filepath = $this->content_path . '/'. $group->getCode() . '/' . $code . '.' . $extension;
 
-    $image = $this->imagine->open($filepath);
+    $web_filepath = $this->web_path . '/portfolio-content/' . $group->getCode() . '/' . $code . '.' .$extension;
 
-    $size = $image->getSize();
+    $content_image = $this->imagine->open($content_filepath);
+
+    $size = $content_image->getSize();
+
+    if ($this->getMaximumBox()->contains($size)) {
+      /* No resizing needed. Copy the content */
+      $filesystem->copy($content_filepath, $web_filepath, true);
+    } else {
+      /* The content file is bigger than the maximum size: resize it an save */
+      $filesystem->mkdir(dirname($web_filepath));
+      $resized_image = $content_image->thumbnail($this->getMaximumBox());
+      $resized_image->save($web_filepath);
+      $size = $resized_image->getSize();
+    }
 
     $image = new Model\PortfolioImage($code, $size->getWidth(), $size->getHeight());
     $image->setDescription($this->metadataGet(false, $metadata, 'description'));
