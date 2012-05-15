@@ -9,6 +9,7 @@ class PortfolioUpdater
 {
   /* configuration */
   private $content_path;
+  private $web_path;
 
   /* processing public state */
   private $fail_reason;
@@ -31,6 +32,7 @@ class PortfolioUpdater
      * So we just keep what we need.
      */
     $this->content_path = $app['content_path'];
+    $this->web_path = $app['web_path'];
 
     $this->start();
   }
@@ -138,7 +140,9 @@ class PortfolioUpdater
           $this->group_index++;
           $this->element_index = 0;
         } else {
-          $this->is_done = true;
+          unset($this->group_index);
+          unset($this->element_index);
+          $this->finish();
         }
       }
     }
@@ -185,6 +189,20 @@ class PortfolioUpdater
       // TODO Figure out error handling.
       return new \DateTime($value);
     }
+  }
+
+  private function finish()
+  {
+    /* Write out the portfolio */
+    file_put_contents(
+      $this->web_path . '/portfolio-content/database.php',
+      array(
+        "<?php header('Location: ../');/*\n",
+        base64_encode(serialize($this->portfolio))
+      ),
+      LOCK_EX
+    );
+    $this->is_done = true;
   }
 
   private function fail($reason)

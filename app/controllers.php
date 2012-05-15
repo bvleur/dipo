@@ -76,14 +76,19 @@ $app->get('/admin', function () use ($app) {
 })->middleware($must_be_logged_in);
 
 $app->get('/admin/bijwerken', function () use ($app) {
+  /* Start a new updater or continue with a running one */
+  // TODO Prevent concurrent runs (due to user interruption): use locking
   if (!$app['session']->has('portfolio_updater')) {
     $portfolio_updater = new Dipo\PortfolioUpdater($app);
     $app['session']->set('portfolio_updater', $portfolio_updater);
   } else {
     $portfolio_updater = $app['session']->get('portfolio_updater');
-    $portfolio_updater->process(30);
+    $portfolio_updater->process(30); // 30 seconds
   }
-  var_dump($portfolio_updater);
+
+  /* If the portfolio updater is done, we can forget */
+  if ($portfolio_updater->isDone())
+    $app['session']->remove('portfolio_updater');
 
   return $app['twig']->render('update.html.twig', array(
     'user' => $app['session']->get('user'),
