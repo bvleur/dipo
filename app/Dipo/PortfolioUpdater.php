@@ -115,7 +115,7 @@ class PortfolioUpdater
       } catch (ParseException $e) {
         throw new PortfolioUpdaterException(array(
           'action' => 'scan-folders',
-          'error' => 'cant-read-metadata-file',
+          'error' => 'cant-parse-metadata-file',
           'path' => $group_code,
           'exception_message' => $e->getMessage()));
       }
@@ -225,6 +225,7 @@ class PortfolioUpdater
         'error' => 'file-missing',
         'group' => $group->getCode(),
         'element' => $code,
+        'type' => $extension, // TODO extension and type are not the same thing.
       ));
 
     $web_filepath = $this->web_path . '/portfolio-content/' . $group->getCode() . '/' . $code . '.' .$extension;
@@ -237,6 +238,7 @@ class PortfolioUpdater
         'error' => 'open-error',
         'group' => $group->getCode(),
         'element' => $code,
+        'type' => $extension, // TODO extension and type are not the same thing.
         'exception_message' => $e->getMessage()
       ));
     }

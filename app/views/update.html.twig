@@ -15,8 +15,7 @@
 {% elseif failure %}
 <h2>Mislukt</h2>
 <p>
-{{failure.action}} -
-{{failure.error}}
+{% include "update.error.#{failure.action}.#{failure.error}.html.twig" %}
 </p>
 {% elseif is_done %}
 <p>
