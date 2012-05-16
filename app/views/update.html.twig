@@ -1,26 +1,30 @@
-{% extends layout %}
+{% extends "layout.admin.html.twig" %}
 
 {% block content %}
 
-<p>Ingelogd als: {{ user.username }}</p>
-<h1>Bijwerken</h1>
+{% if failure %}
+
+<h1>Bijwerken is mislukt</h2>
+<div class="extended_error">
+{% include "update.error.#{failure.action}.#{failure.error}.html.twig" %}
+</div>
+
+{% elseif is_done %}
+
+<h1>Bijwerken gelukt.</h1>
+<p>
+Je portfolio bestaat nu uit {{ completed }} elementen.
+</p>
+
+{% else %}
 
 <progress value="{{ completed }}" max="{{ total }}">{{ (completed // total) * 100 }}%</progress>
 
-{% if not is_done and not failure %}
 <form method="get" action="annuleren" class="progress_cancel">
   <input type="submit" value="Annuleren">
 </form>
 <script>window.location.reload(true/* force get */);</script>
-{% elseif failure %}
-<h2>Mislukt</h2>
-<p>
-{% include "update.error.#{failure.action}.#{failure.error}.html.twig" %}
-</p>
-{% elseif is_done %}
-<p>
-Bijgwerkt!
-</p>
+
 {% endif %}
 
 {% endblock %}
