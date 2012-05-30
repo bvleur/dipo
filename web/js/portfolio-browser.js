@@ -50,9 +50,9 @@
     /* Pre-load an elements contents by adding the HTML to the container */
     function stageElement(element) {
       var stagedHtml = $(element.html);
-      absoluteCenter(stagedHtml);
       stagedHtml.css({'display': 'none'});
       container.append(stagedHtml);
+      absoluteCenter(stagedHtml);
       element.staged = stagedHtml;
     }
 
@@ -75,6 +75,11 @@
 
       // TODO update meta-data
       // TODO update navigation
+
+      /* Change the URL (ignore older browsers) */
+      if (Modernizr.history)
+        window.history.pushState(null, null, id);
+
       current = show;
     }
 
