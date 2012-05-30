@@ -19,7 +19,7 @@
         'top': '50%',
         'left': '50%',
         'margin-left': -1 * (child.width() / 2),
-        'margin-top': -1 * (child.height() / 2),
+        'margin-top': -1 * (child.height() / 2)
       });
     }
 
