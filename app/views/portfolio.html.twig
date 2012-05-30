@@ -2,13 +2,9 @@
 
 {% block content %}
 
-<figure>
+<figure id="main-portfolio">
 <div class="elementcontainer">
-{% if element.getElementType == 'image' %}
-<div class="element">
-<img width="{{ element.width }}" height="{{ element.height }}" src="{{ app.request.basepath }}/portfolio-content/{{ element.getPublicFilePath }}">
-</div>
-{% endif %}
+{% include "element.#{element.getElementType}.html.twig" %}
 </div>
 
 <nav class="dot-nav">
@@ -26,7 +22,8 @@
 <figcaption>
 {{ element.description }}
 </figcaption>
-</figure>
 
+</figure>
+<script>$('#main-portfolio').portfolioBrowser();</script>
 
 {% endblock %}

@@ -16,6 +16,25 @@ $app->match('sidebar', function () use ($app) {
   ));
 });
 
+$app->get('/portfolio/{group}/browser-data', function ($group) use ($app) {
+  if (!$group)
+    $app->abort(404);
+
+  $browser_data = array();
+  foreach ($group->getElements() as $element) {
+    $html = $app['twig']->render('element.' . $element->getElementType() . '.html.twig', array(
+      'element' => $element
+    ));
+
+    $browser_data[] = array(
+      'id' => $element->getCode(),
+      'html' => $html
+    );
+  }
+
+  return new Response(json_encode($browser_data));
+})->convert('group', array($app['portfolio'], 'getGroupByCode'));
+
 $app->get('/portfolio/{group}/{element}', function ($group, $element) use ($app) {
   if (!$group)
     $app->abort(404);
