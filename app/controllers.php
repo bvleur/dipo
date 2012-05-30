@@ -20,17 +20,29 @@ $app->get('/portfolio/{group}/browser-data', function ($group) use ($app) {
   if (!$group)
     $app->abort(404);
 
-  $browser_data = array();
+  $group_description = $group->getDescription();
+
+  $elements_data = array();
   foreach ($group->getElements() as $element) {
     $html = $app['twig']->render('element.' . $element->getElementType() . '.html.twig', array(
       'element' => $element
     ));
 
-    $browser_data[] = array(
+    $element_data = array(
       'id' => $element->getCode(),
       'html' => $html
     );
+
+    if ($element->getDescription() !== $group_description)
+      $element_data['description'] = $element->getDescription();
+
+    $elements_data[] = $element_data;
   }
+
+  $browser_data = array(
+    'description' => $group_description,
+    'elements' => $elements_data
+  );
 
   return new Response(json_encode($browser_data));
 })->convert('group', array($app['portfolio'], 'getGroupByCode'));

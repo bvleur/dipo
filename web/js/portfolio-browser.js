@@ -4,6 +4,7 @@
   $.fn.portfolioBrowser = function(currentId) {
     var dot_nav = this.find('.dot-nav');
     var container = this.find('.elementcontainer');
+    var description = this.find('figcaption');
     var current = container.find('.element');
     var currentIdx;
 
@@ -27,6 +28,7 @@
     absoluteCenter(current);
 
     /* List of elements */
+    var default_description;
     var elements;
 
     function findElementIndex(id) {
@@ -79,7 +81,9 @@
         preloadNextPrev();
       });
 
-      // TODO update meta-data
+      /* Update description */
+      description.html(element.description || default_description);
+
       // TODO update navigation
 
       /* Change the URL (ignore older browsers) */
@@ -107,7 +111,8 @@
 
     /* Retrive the data for the current browsing set */
     $.getJSON('browser-data', function(data) {
-      elements = data;
+      default_description = data['description']
+      elements = data['elements'];
       attachToNavigation();
 
       currentIdx = findElementIndex(currentId);
