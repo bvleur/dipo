@@ -1,10 +1,11 @@
 (function($) {
   "use strict";
 
-  $.fn.portfolioBrowser = function() {
+  $.fn.portfolioBrowser = function(currentId) {
     var dot_nav = this.find('.dot-nav');
     var container = this.find('.elementcontainer');
     var current = container.find('.element');
+    var currentIdx;
 
     /* Multiple elements in the container need to overlap during the transition.
      * Therefore elements need to be absolutely positioned in a relative positioned container.
@@ -28,8 +29,8 @@
     /* List of elements */
     var elements;
 
-    function getElementIndex(id) {
-      for (var idx in elements)
+    function findElementIndex(id) {
+      for (var idx = 0; idx < elements.length; idx++)
           if (elements[idx].id == id)
             return idx;
 
@@ -37,23 +38,18 @@
       alert('not-found');
     }
 
-    function getElement(id, ensureStaged) {
-      var element = elements[getElementIndex(id)];
+    /* Get the staged (pre-loaded) element contents. If it isn't, stage it now
+     * by adding the HTML to the container */
+    function getStagedElement(element) {
+      if (typeof element.staged === "undefined") {
+        var stagedHtml = $(element.html);
+        stagedHtml.css({'display': 'none'});
+        container.append(stagedHtml);
+        absoluteCenter(stagedHtml);
+        element.staged = stagedHtml;
+      }
 
-      if ((typeof ensureStaged !== "undefinded" && ensureStaged)
-          && (typeof element.staged === "undefined"))
-        stageElement(element);
-
-      return element;
-    }
-
-    /* Pre-load an elements contents by adding the HTML to the container */
-    function stageElement(element) {
-      var stagedHtml = $(element.html);
-      stagedHtml.css({'display': 'none'});
-      container.append(stagedHtml);
-      absoluteCenter(stagedHtml);
-      element.staged = stagedHtml;
+      return element.staged;
     }
 
 
@@ -62,15 +58,23 @@
       /* Note: id isn't necessarily an element code. Element codes are only
        * guaranteed to be unique in a group. It's a string uniquely identifying an element in a browsing set.
        */
-      var element = getElement(id, true);
+      var idx = findElementIndex(id);
 
-      var show = element.staged;
-      var hide = current;
+      var element = elements[idx];
 
-      show.css({'display': 'block', 'opacity': 0});
-      show.animate({'opacity': 1});
-      hide.animate({'opacity': 0}, function () {
-        hide.css({'display': 'none'});
+      var staged = getStagedElement(element);
+
+      /* Cross-fade the new element in (and hide the old afterwards) */
+      staged.css({'display': 'block', 'opacity': 0});
+      staged.animate({'opacity': 1});
+      current.animate({'opacity': 0}, function () {
+        current.css({'display': 'none'});
+
+        /* The staged element should now be considered current as the old one is hidden */
+        current = staged;
+        currentIdx = idx;
+
+        preloadNextPrev();
       });
 
       // TODO update meta-data
@@ -79,8 +83,16 @@
       /* Change the URL (ignore older browsers) */
       if (Modernizr.history)
         window.history.pushState(null, null, id);
+    }
 
-      current = show;
+    /* Preload the previous and next elements by already requesting the element on stage */
+    function preloadNextPrev() {
+      if ((currentIdx + 1) < elements.length) {
+        getStagedElement(elements[currentIdx + 1]);
+      }
+      if ((currentIdx - 1) >= 0) {
+        getStagedElement(elements[currentIdx - 1]);
+      }
     }
 
     /* Make existing navigation elements in the page use this portfolio browser for switching */
@@ -95,6 +107,10 @@
     $.getJSON('browser-data', function(data) {
       elements = data;
       attachToNavigation();
+
+      currentIdx = findElementIndex(currentId);
+      preloadNextPrev();
     });
   };
-})( jQuery );
+
+})(jQuery);
