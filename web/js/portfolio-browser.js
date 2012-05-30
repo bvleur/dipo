@@ -59,6 +59,8 @@
        * guaranteed to be unique in a group. It's a string uniquely identifying an element in a browsing set.
        */
       var idx = findElementIndex(id);
+      if (idx == currentIdx)
+        return; /* Nothing to do, this element is already shown. Don't animate */
 
       var element = elements[idx];
 
