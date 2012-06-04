@@ -2,7 +2,7 @@
   "use strict";
 
   $.fn.portfolioBrowser = function(currentId) {
-    var dot_nav = this.find('.dot-nav');
+    var dotNav = this.find('.dot-nav li');
     var container = this.find('.elementcontainer');
     var description = this.find('figcaption');
     var current = container.find('.element');
@@ -84,7 +84,9 @@
       /* Update description */
       description.html(element.description || default_description);
 
-      // TODO update navigation
+      /* Update navigation */
+      dotNav.eq(currentIdx).removeClass('current');
+      dotNav.eq(idx).addClass('current');
 
       /* Change the URL (ignore older browsers) */
       if (Modernizr.history)
@@ -103,7 +105,7 @@
 
     /* Make existing navigation elements in the page use this portfolio browser for switching */
     function attachToNavigation() {
-      dot_nav.find('a').click(function () {
+      dotNav.find('a').click(function (e) {
         showElement($(this).attr('href'));
         return false;
       });
