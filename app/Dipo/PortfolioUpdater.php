@@ -166,7 +166,7 @@ class PortfolioUpdater
       $element_code = $group_element_codes[$this->element_index];
       $element_metadata = $group_metadata['elements'][$element_code];
 
-      $element = $this->createImage($this->group, $element_code, $element_metadata);
+      $element = $this->createImage($this->group, $element_code, (array)$element_metadata);
       $this->group->addElement($element);
 
       $this->completed++;
@@ -214,31 +214,59 @@ class PortfolioUpdater
 
   private function createImage($group, $code, $metadata)
   {
+    $content_to_web_types = array(
+      'tiff' => 'jpeg'
+    );
+
     $filesystem = new Filesystem();
 
-    $extension = 'jpg'; // TODO Support other file-types
-    $content_filepath = $this->content_path . '/'. $group->getCode() . '/' . $code . '.' . $extension;
+    /* Automatically determine extension of file */
+    $content_path = $this->content_path . '/'. $group->getCode();
 
-    if (!is_file($content_filepath))
+    $finder = new Finder();
+    $finder->in($content_path)->depth(0)->name('/^' . $code . '\..*/');
+
+    $files = $finder->getIterator();
+    $files->rewind();
+    $content_file = $files->current();
+
+    if ($content_file === NULL)
       throw new PortfolioUpdaterException(array(
         'action' => 'content-image',
         'error' => 'file-missing',
         'group' => $group->getCode(),
         'element' => $code,
-        'type' => $extension, // TODO extension and type are not the same thing.
       ));
 
-    $web_filepath = $this->web_path . '/portfolio-content/' . $group->getCode() . '/' . $code . '.' .$extension;
+    $files->next();
+    if ($files->valid()) {
+      throw new PortfolioUpdaterException(array(
+        'action' => 'content-image',
+        'error' => 'multiple-files',
+        'group' => $group->getCode(),
+        'element' => $code,
+      ));
+    }
+
+    $content_extension = $content_file->getExtension();
+    $content_type = Model\PortfolioImage::getTypeForExtension(strtolower($content_extension));
+
+    $auto_web_type = array_key_exists($content_type, $content_to_web_types) ? $content_to_web_types[$content_type] : $content_type;
+    $web_type = strtolower($this->metadataGet(false, $metadata, 'web_type', 'string', $auto_web_type));
+    // TODO validate web-type to be valid
+    $web_extension = Model\PortfolioImage::getExtensionForType($web_type);
+
+    $web_filepath = $this->web_path . '/portfolio-content/' . $group->getCode() . '/' . $code . '.' .$web_extension;
 
     try {
-      $content_image = $this->imagine->open($content_filepath);
+      $content_image = $this->imagine->open($content_file->__toString());
     } catch (\Imagine\Exception\InvalidArgumentException $e) {
       throw new PortfolioUpdaterException(array(
         'action' => 'content-image',
         'error' => 'open-error',
         'group' => $group->getCode(),
         'element' => $code,
-        'type' => $extension, // TODO extension and type are not the same thing.
+        'type' => $content_type,
         'exception_message' => $e->getMessage()
       ));
     }
@@ -256,7 +284,7 @@ class PortfolioUpdater
       $size = $resized_image->getSize();
     }
 
-    $image = new Model\PortfolioImage($code, $size->getWidth(), $size->getHeight());
+    $image = new Model\PortfolioImage($code, $size->getWidth(), $size->getHeight(), $web_type);
 
     try {
       $image->setDescription($this->metadataGet(false, $metadata, 'description'));
@@ -271,14 +299,18 @@ class PortfolioUpdater
     return $image;
   }
 
-  private function metadataGet($required, $data, $key, $type = 'string')
+  private function metadataGet($required, $data, $key, $type = 'string', $default = null)
   {
-    if ($required && !array_key_exists($key, $data)) {
-      throw new PortfolioUpdaterException(array(
-        'error' => 'missing',
-        'key' => $key,
-        'data_type' => $type
-      ));
+    if (!array_key_exists($key, $data)) {
+      if ($required) {
+        throw new PortfolioUpdaterException(array(
+          'error' => 'missing',
+          'key' => $key,
+          'data_type' => $type
+        ));
+      } else {
+        return $default;
+      }
     }
 
     $value = $data[$key];
