@@ -1,7 +1,7 @@
 (function($) {
   "use strict";
 
-  $.fn.portfolioBrowser = function(currentId) {
+  $.fn.portfolioBrowser = function(initialId) {
     var dotNav = this.find('.dot-nav li');
     var container = this.find('.elementcontainer');
     var description = this.find('figcaption');
@@ -56,7 +56,7 @@
 
 
     /* Transition the current element to element with id "id" and update meta-data and navigation */
-    function showElement(id) {
+    function showElement(id, noPushState) {
       /* Note: id isn't necessarily an element code. Element codes are only
        * guaranteed to be unique in a group. It's a string uniquely identifying an element in a browsing set.
        */
@@ -89,8 +89,8 @@
       dotNav.eq(idx).addClass('current');
 
       /* Change the URL (ignore older browsers) */
-      if (Modernizr.history)
-        window.history.pushState(null, null, id);
+      if (Modernizr.history && noPushState)
+        window.history.pushState({id: id}, null, id);
     }
 
     /* Preload the previous and next elements by already requesting the element on stage */
@@ -106,9 +106,17 @@
     /* Make existing navigation elements in the page use this portfolio browser for switching */
     function attachToNavigation() {
       dotNav.find('a').click(function (e) {
-        showElement($(this).attr('href'));
+        showElement($(this).attr('href'), true);
         return false;
       });
+
+      if (Modernizr.history) {
+        window.onpopstate = function (event) {
+          console.log('popstate:' + event.state.id);
+          showElement(event.state.id);
+        }
+        window.history.replaceState({id: initialId}, null, initialId);
+      }
     }
 
     /* Retrive the data for the current browsing set */
@@ -117,7 +125,7 @@
       elements = data['elements'];
       attachToNavigation();
 
-      currentIdx = findElementIndex(currentId);
+      currentIdx = findElementIndex(initialId);
       preloadNextPrev();
     });
   };
