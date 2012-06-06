@@ -116,7 +116,7 @@ class PortfolioUpdater
         throw new PortfolioUpdaterException(array(
           'action' => 'scan-folders',
           'error' => 'cant-parse-metadata-file',
-          'path' => $group_code,
+          'group' => $group_code,
           'exception_message' => $e->getMessage()));
       }
     }
