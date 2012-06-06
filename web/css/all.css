@@ -50,6 +50,14 @@ figcaption {
   height: 50px;
 }
 
+figcaption p:first-child {
+  margin-top: 0;
+}
+
+figcaption p:last-child {
+  margin-bottom: 0;
+}
+
 .dot-nav {
   text-align: center;
 }

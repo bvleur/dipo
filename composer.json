@@ -9,6 +9,8 @@
     "twig/twig" : "1.6.2",
     "symfony/yaml": "2.1.*",
     "symfony/filesystem": "2.1.*",
-    "imagine/imagine": "dev-master"
+    "symfony/finder": "2.1.*",
+    "imagine/imagine": "dev-master",
+    "dflydev/markdown": "dev-master"
   }
 }

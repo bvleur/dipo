@@ -5,6 +5,7 @@ use Symfony\Component\Finder\Finder;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Yaml\Exception\ParseException;
+use dflydev\markdown\MarkdownParser;
 
 /**
  * Updates the portfolio:
@@ -196,7 +197,7 @@ class PortfolioUpdater
         $this->metadataGet(true, $metadata, 'created-at', 'DateTime'),
         $this->metadataGet(true, $metadata, 'title')
       );
-      $group->setDescription($this->metadataGet(true, $metadata, 'description'));
+      $group->setDescription($this->metadataGet(true, $metadata, 'description', 'markdown-as-html'));
     } catch (PortfolioUpdaterException $pue) {
       throw $pue->addDetails(array(
         'action' => 'metadata-group',
@@ -287,7 +288,7 @@ class PortfolioUpdater
     $image = new Model\PortfolioImage($code, $size->getWidth(), $size->getHeight(), $web_type);
 
     try {
-      $image->setDescription($this->metadataGet(false, $metadata, 'description'));
+      $image->setDescription($this->metadataGet(false, $metadata, 'description', 'markdown-as-html'));
     } catch (PortfolioUpdaterException $pue) {
       throw $pue->addDetails(array(
         'action' => 'metadata-element',
@@ -322,6 +323,10 @@ class PortfolioUpdater
     case 'DateTime':
       // TODO Figure out error handling.
       return new \DateTime($value);
+    case 'markdown-as-html':
+      // TODO Figure out error handling.
+      $markdownParser = new \dflydev\markdown\MarkdownParser();
+      return $markdownParser->transformMarkdown($value);
     }
   }
 
