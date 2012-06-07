@@ -7,6 +7,7 @@
   <title>Digital Portfolio</title>
   <link rel="stylesheet" href="{{ app.request.basepath }}/css/normalize.css">
   <link rel="stylesheet" href="{{ app.request.basepath }}/css/all.css">
+  <link rel="stylesheet" href="{{ app.request.basepath }}/css/custom.css">
   <script src="{{ app.request.basepath }}/js/modernizr-2.5.3-custom-1.js"></script>
   <script src="{{ app.request.basepath }}/js/jquery-1.7.2.min.js"></script>
   <script src="/js/portfolio-browser.js"></script>
@@ -15,8 +16,7 @@
 
 <div id="main-container" class="cf">
   <div class="cf" id="topbar">
-    <!-- <img align="right" src="{{ app.request.basepath }}/images/header.png"> -->
-    <span style="display: block; text-align: center; padding: 20px 0 20px 200px; color: #000077; font-size: 32pt;">Digital Portfolio</span>
+    {% include 'topbar.html.twig' %}
   </div>
   {% block sidebar %}
   {{ render('/sidebar') }}

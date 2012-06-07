@@ -12,7 +12,10 @@ require_once __DIR__ . '/config.php';
 
 /* Register the Twig Template Engine and use a global layout template */
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
-    'twig.path' => __DIR__.'/views'
+  'twig.path' => array(
+    __DIR__ . '/../custom/views',
+    __DIR__ . '/views'
+  )
 ));
 
 /* Register the (shared) imagine service */

@@ -2,6 +2,16 @@ body {
   background-image: url('../images/tex2res5-blue.png');
 }
 
+#topbar h1 {
+  display: block;
+  text-align: center;
+  margin: 0;
+  font-weight: normal;
+  padding: 20px 0 20px 200px;
+  color: #000077;
+  font-size: 32pt;
+}
+
 #main-container {
   background-color: #FFF;
   margin: 20px auto;
