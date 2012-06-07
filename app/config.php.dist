@@ -6,3 +6,12 @@
 /* Only enable following lines while debugging */
 $app['debug'] = true;
 ini_set('display_errors', 1);
+
+/* Define users that can login to the application.
+ *
+ * You can generate a password hash by running "generate-password-hash.php"
+ * from the command line with a password as argument.
+ */
+$app['users'] = array(
+  array('username' => '', 'password_hash' => '')
+);
