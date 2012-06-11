@@ -276,7 +276,7 @@ class PortfolioUpdater
 
     if ($this->getMaximumBox()->contains($size)) {
       /* No resizing needed. Copy the content */
-      $filesystem->copy($content_filepath, $web_filepath, true);
+      $filesystem->copy($content_file, $web_filepath, true);
     } else {
       /* The content file is bigger than the maximum size: resize it an save */
       $filesystem->mkdir(dirname($web_filepath));
