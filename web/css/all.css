@@ -32,6 +32,10 @@ body {
   float:left;
 }
 
+.error h2 {
+  color: red
+}
+
 figure  {
   width: 700px;
   margin: 10px;

@@ -2,7 +2,23 @@
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+function config_error($app, $variable, $error_code) {
+  return $app['twig']->render('error.config.' . $variable . '.' . $error_code . '.html.twig',
+    array(
+      'variable_name' => $variable,
+      'variable_value' => $app[$variable]
+    )
+  );
+}
+
 $app->match('/', function () use ($app) {
+  if (isset($app['start_group'])) {
+    $group = $app['portfolio']->getGroupByCode($app['start_group']);
+    if ($group === null) {
+      return config_error($app, 'start_group', 'invalid');
+    }
+    return $app->redirect('/portfolio/' . $group->getCode() . '/' . $group->getFirstElement()->getCode());
+  }
   return $app['twig']->render('index.html.twig');
 });
 

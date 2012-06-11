@@ -18,3 +18,7 @@ $app['title'] = 'My Digital Portfolio';
 $app['users'] = array(
   array('username' => '', 'password_hash' => '')
 );
+
+/* Instead of a dedicated start page you can open at a specific portfolio group
+ */
+// $app['start_group'] = 'schetsboek';

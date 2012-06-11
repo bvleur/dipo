@@ -1,0 +1,21 @@
+{% extends "layout.error.config.html.twig" %}
+
+{% block error %}
+<h3>Ingestelde start-groep bestaat niet.</h3>
+
+<p>
+De configuratie start-groep (<code>start_group</code>): <code>{{ variable_value }}</code> bestaat niet.
+</p>
+
+<section class="causes">
+Mogelijke oorzaken voor dit probleem zijn:
+<ul>
+  <li>De ingestelde groepsnaam bevat een typefout</li>
+  <li>Het portfolio is nog niet bijgewerkt en daardoor wordt de nieuwe groep niet herkend.</li>
+</ul>
+</section>
+
+<p class="tip">
+Gebruik zoveel mogelijk kleine letters in groepsnamen.
+</p>
+{% endblock %}
