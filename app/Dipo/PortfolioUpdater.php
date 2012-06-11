@@ -195,7 +195,8 @@ class PortfolioUpdater
       $group = new Model\PortfolioGroup(
         $code,
         $this->metadataGet(true, $metadata, 'created-at', 'DateTime'),
-        $this->metadataGet(true, $metadata, 'title')
+        $this->metadataGet(true, $metadata, 'title'),
+        $this->metadataGet(false, $metadata, 'set', 'integer', 1)
       );
       $group->setDescription($this->metadataGet(true, $metadata, 'description', 'markdown-as-html'));
     } catch (PortfolioUpdaterException $pue) {
@@ -320,6 +321,9 @@ class PortfolioUpdater
     case 'string':
       // TODO Figure out non-empty case
       return $value;
+    case 'integer':
+      // TODO Figure out error handling.
+      return (integer)$value;
     case 'DateTime':
       // TODO Figure out error handling.
       return new \DateTime($value);
