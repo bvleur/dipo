@@ -254,7 +254,7 @@ class PortfolioUpdater
     $content_type = Model\PortfolioImage::getTypeForExtension(strtolower($content_extension));
 
     $auto_web_type = array_key_exists($content_type, $content_to_web_types) ? $content_to_web_types[$content_type] : $content_type;
-    $web_type = strtolower($this->metadataGet(false, $metadata, 'web_type', 'string', $auto_web_type));
+    $web_type = strtolower($this->metadataGet(false, $metadata, 'web-type', 'string', $auto_web_type));
     // TODO validate web-type to be valid
     $web_extension = Model\PortfolioImage::getExtensionForType($web_type);
 
