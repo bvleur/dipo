@@ -18,12 +18,6 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
   )
 ));
 
-/* Register the (shared) imagine service */
-$app['imagine'] = $app->share(function ($app) {
-  $class = sprintf('\Imagine\%s\Imagine', $app['imagine.driver']);
-  return new $class();
-});
-
 $app['portfolio'] = $app->share(function ($app) {
   $database_file = file($app['web_portfolio_path'] . '/database.php');
   // TODO Handle errors (missing database, damaged file)
