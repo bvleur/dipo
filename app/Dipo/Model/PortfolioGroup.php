@@ -1,14 +1,13 @@
 <?php
 namespace Dipo\Model;
 
-class PortfolioGroup
+class PortfolioGroup extends PortfolioElementContainer
 {
 
   private $_set_index;
   private $_code;
   private $_created_at;
   private $_name;
-  private $_elements = array();
 
   public function __construct($code, $created_at, $name, $set_index = 1)
   {
@@ -50,45 +49,8 @@ class PortfolioGroup
 
   public function addElement($element)
   {
-    $code = $element->getCode();
-
-    if (array_key_exists($code, $this->_elements))
-      throw new PortfolioDuplicateElementCodeException($group, $element, $this->_elements[$code]);
-
-    $this->_elements[$element->getCode()] = $element;
+    parent::addElement($element);
     $element->setGroup($this);
-  }
-
-  public function getElements()
-  {
-    return $this->_elements;
-  }
-
-  public function getElement($code)
-  {
-    if (!array_key_exists($code, $this->_elements))
-      return null;
-
-    return $this->_elements[$code];
-  }
-
-  public function getElementCount()
-  {
-    return count($this->_elements);
-  }
-
-  public function getFirstElement()
-  {
-    return reset($this->_elements);
-  }
-
-  public function getIndexOfElement($element)
-  {
-    $keys = array_flip(array_keys($this->_elements));
-    if (!array_key_exists($element->getCode(), $keys))
-      return null;
-
-    return $keys[$element->getCode()];
   }
 
 }
