@@ -1,5 +1,5 @@
 <?php
-namespace Dipo;
+namespace Dipo\Updater;
 
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Filesystem\Filesystem;
@@ -11,7 +11,7 @@ use dflydev\markdown\MarkdownParser;
  * Updates the portfolio:
  *  - Use the content and meta-data in the content path
  *  - Populate the portfolio web path with the content
- *  - Generate a matching Dipo\Model\Portfolio from the content
+ *  - Generate a matching \Dipo\Model\Portfolio from the content
  *  - Write out a serialized version of this model in the web path
  *
  * Usage:
@@ -30,7 +30,7 @@ use dflydev\markdown\MarkdownParser;
  * Dependencies:
  *   Before calling process() an Imagine instance should be set using setImagine()
  */
-class PortfolioUpdater
+class Updater
 {
   /* configuration */
   private $content_path;
@@ -95,14 +95,14 @@ class PortfolioUpdater
       try {
         $group_code = $file->getRelativePath();
         if (urlencode($group_code) != $group_code)
-          throw new PortfolioUpdaterException(array(
+          throw new Exception(array(
             'action' => 'scan-folders',
             'error' => 'unsupported-characters',
             'path' => $group_code));
 
         $file_content = file_get_contents($file->getPathname());
         if ($file_content === false) {
-          throw new PortfolioUpdaterException(array(
+          throw new Exception(array(
             'action' => 'scan-folders',
             'error' => 'cant-read-metadata-file',
             'path' => $group_code));
@@ -114,7 +114,7 @@ class PortfolioUpdater
 
         $this->total += count($group_metadata['elements']);
       } catch (ParseException $e) {
-        throw new PortfolioUpdaterException(array(
+        throw new Exception(array(
           'action' => 'scan-folders',
           'error' => 'cant-parse-metadata-file',
           'group' => $group_code,
@@ -142,7 +142,7 @@ class PortfolioUpdater
       /* Initialize processing progress and result */
       $this->completed = 0;
       $this->is_done = false;
-      $this->portfolio = new Model\Portfolio();
+      $this->portfolio = new \Dipo\Model\Portfolio();
       $this->group_index = 0;
       $this->metadata_group_codes = array_keys($this->metadata);
 
@@ -192,15 +192,15 @@ class PortfolioUpdater
   private function createGroup($code, $metadata)
   {
     try {
-      $group = new Model\PortfolioGroup(
+      $group = new \Dipo\Model\PortfolioGroup(
         $code,
         $this->metadataGet(true, $metadata, 'created-at', 'DateTime'),
         $this->metadataGet(true, $metadata, 'title'),
         $this->metadataGet(false, $metadata, 'set', 'integer', 1)
       );
       $group->setDescription($this->metadataGet(true, $metadata, 'description', 'markdown-as-html'));
-    } catch (PortfolioUpdaterException $pue) {
-      throw $pue->addDetails(array(
+    } catch (Exception $e) {
+      throw $e->addDetails(array(
         'action' => 'metadata-group',
         'group' => $code
       ));
@@ -233,7 +233,7 @@ class PortfolioUpdater
     $content_file = $files->current();
 
     if ($content_file === NULL)
-      throw new PortfolioUpdaterException(array(
+      throw new Exception(array(
         'action' => 'content-image',
         'error' => 'file-missing',
         'group' => $group->getCode(),
@@ -242,7 +242,7 @@ class PortfolioUpdater
 
     $files->next();
     if ($files->valid()) {
-      throw new PortfolioUpdaterException(array(
+      throw new Exception(array(
         'action' => 'content-image',
         'error' => 'multiple-files',
         'group' => $group->getCode(),
@@ -251,19 +251,19 @@ class PortfolioUpdater
     }
 
     $content_extension = $content_file->getExtension();
-    $content_type = Model\PortfolioImage::getTypeForExtension(strtolower($content_extension));
+    $content_type = \Dipo\Model\PortfolioImage::getTypeForExtension(strtolower($content_extension));
 
     $auto_web_type = array_key_exists($content_type, $content_to_web_types) ? $content_to_web_types[$content_type] : $content_type;
     $web_type = strtolower($this->metadataGet(false, $metadata, 'web-type', 'string', $auto_web_type));
     // TODO validate web-type to be valid
-    $web_extension = Model\PortfolioImage::getExtensionForType($web_type);
+    $web_extension = \Dipo\Model\PortfolioImage::getExtensionForType($web_type);
 
     $web_filepath = $this->web_path . '/portfolio-content/' . $group->getCode() . '/' . $code . '.' .$web_extension;
 
     try {
       $content_image = $this->imagine->open($content_file->__toString());
     } catch (\Imagine\Exception\InvalidArgumentException $e) {
-      throw new PortfolioUpdaterException(array(
+      throw new Exception(array(
         'action' => 'content-image',
         'error' => 'open-error',
         'group' => $group->getCode(),
@@ -286,12 +286,12 @@ class PortfolioUpdater
       $size = $resized_image->getSize();
     }
 
-    $image = new Model\PortfolioImage($code, $size->getWidth(), $size->getHeight(), $web_type);
+    $image = new \Dipo\Model\PortfolioImage($code, $size->getWidth(), $size->getHeight(), $web_type);
 
     try {
       $image->setDescription($this->metadataGet(false, $metadata, 'description', 'markdown-as-html'));
-    } catch (PortfolioUpdaterException $pue) {
-      throw $pue->addDetails(array(
+    } catch (Exception $e) {
+      throw $e->addDetails(array(
         'action' => 'metadata-element',
         'group' => $group->getCode(),
         'element' => $code
@@ -305,7 +305,7 @@ class PortfolioUpdater
   {
     if (!array_key_exists($key, $data)) {
       if ($required) {
-        throw new PortfolioUpdaterException(array(
+        throw new Exception(array(
           'error' => 'missing',
           'key' => $key,
           'data_type' => $type

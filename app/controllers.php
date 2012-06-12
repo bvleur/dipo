@@ -128,42 +128,42 @@ $app->get('/admin', function () use ($app) {
 $app->get('/admin/bijwerken', function () use ($app) {
   /* Start a new updater or continue with a running one */
   // TODO Prevent concurrent runs (due to user interruption): use locking
-  if (!$app['session']->has('portfolio_updater')) {
-    $portfolio_updater = new Dipo\PortfolioUpdater(
+  if (!$app['session']->has('updater')) {
+    $updater = new \Dipo\Updater\Updater(
       $app['content_path'],
       $app['web_path'],
       $app['maximum_width'],
       $app['maximum_height']
     );
-    $app['session']->set('portfolio_updater', $portfolio_updater);
+    $app['session']->set('updater', $updater);
   } else {
-    $portfolio_updater = $app['session']->get('portfolio_updater');
+    $updater = $app['session']->get('updater');
   }
 
-  $portfolio_updater->setImagine($app['imagine']);
+  $updater->setImagine($app['imagine']);
 
   try {
-    $portfolio_updater->process($app['updater.processing_step_seconds']);
-  } catch (Dipo\PortfolioUpdaterException $pue) {
-    $failure = $pue;
+    $updater->process($app['updater.processing_step_seconds']);
+  } catch (\Dipo\Updater\Exception $e) {
+    $failure = $e;
   }
 
   /* If the portfolio updater is done, we can forget */
-  if ($portfolio_updater->isDone() || isset($failure)) {
-    $app['session']->remove('portfolio_updater');
+  if ($updater->isDone() || isset($failure)) {
+    $app['session']->remove('updater');
   }
 
   return $app['twig']->render('update.html.twig',
     array(
       'user' => $app['session']->get('user'),
-      'total' => $portfolio_updater->getTotal(),
-      'completed' => $portfolio_updater->getCompleted(),
-      'is_done' => $portfolio_updater->isDone(),
+      'total' => $updater->getTotal(),
+      'completed' => $updater->getCompleted(),
+      'is_done' => $updater->isDone(),
       'failure' => isset($failure) ? $failure->getDetails() : false
     ));
 })->middleware($must_be_logged_in);
 
 $app->get('/admin/bijwerken/annuleren', function () use ($app) {
-  $app['session']->remove('portfolio_updater');
+  $app['session']->remove('updater');
   return $app->redirect('/admin');
 })->middleware($must_be_logged_in);
