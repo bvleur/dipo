@@ -1,7 +1,7 @@
 <?php
 namespace Dipo\Model;
 
-abstract class PortfolioElement
+abstract class Element
 {
 
   private $_code;

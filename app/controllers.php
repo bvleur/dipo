@@ -36,8 +36,8 @@ $app->get('/portfolio/{container}/browser-data', function ($container) use ($app
   if (!$container)
     $app->abort(404);
 
-  /* PortfolioGroups have a shared description, which compresses nicely into a default description field */
-  if ($container instanceof \Dipo\Model\PortfolioGroup) {
+  /* Groups have a shared description, which compresses nicely into a default description field */
+  if ($container instanceof \Dipo\Model\Group) {
     $default_description = $container->getDescription();
   }
 
@@ -148,7 +148,7 @@ $app->get('/admin/bijwerken', function () use ($app) {
     $failure = $e;
   }
 
-  /* If the portfolio updater is done, we can forget */
+  /* If the updater is done, we can forget */
   if ($updater->isDone() || isset($failure)) {
     $app['session']->remove('updater');
   }

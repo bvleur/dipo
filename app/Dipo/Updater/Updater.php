@@ -192,7 +192,7 @@ class Updater
   private function createGroup($code, $metadata)
   {
     try {
-      $group = new \Dipo\Model\PortfolioGroup(
+      $group = new \Dipo\Model\Group(
         $code,
         $this->metadataGet(true, $metadata, 'created-at', 'DateTime'),
         $this->metadataGet(true, $metadata, 'title'),
@@ -251,12 +251,12 @@ class Updater
     }
 
     $content_extension = $content_file->getExtension();
-    $content_type = \Dipo\Model\PortfolioImage::getTypeForExtension(strtolower($content_extension));
+    $content_type = \Dipo\Model\Image::getTypeForExtension(strtolower($content_extension));
 
     $auto_web_type = array_key_exists($content_type, $content_to_web_types) ? $content_to_web_types[$content_type] : $content_type;
     $web_type = strtolower($this->metadataGet(false, $metadata, 'web-type', 'string', $auto_web_type));
     // TODO validate web-type to be valid
-    $web_extension = \Dipo\Model\PortfolioImage::getExtensionForType($web_type);
+    $web_extension = \Dipo\Model\Image::getExtensionForType($web_type);
 
     $web_filepath = $this->web_path . '/portfolio-content/' . $group->getCode() . '/' . $code . '.' .$web_extension;
 
@@ -286,7 +286,7 @@ class Updater
       $size = $resized_image->getSize();
     }
 
-    $image = new \Dipo\Model\PortfolioImage($code, $size->getWidth(), $size->getHeight(), $web_type);
+    $image = new \Dipo\Model\Image($code, $size->getWidth(), $size->getHeight(), $web_type);
 
     try {
       $image->setDescription($this->metadataGet(false, $metadata, 'description', 'markdown-as-html'));

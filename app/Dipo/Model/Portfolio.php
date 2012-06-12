@@ -6,7 +6,7 @@ class Portfolio
   private $_groups = array();
   private $_tags = array();
 
-  public function addGroup(PortfolioGroup $group)
+  public function addGroup(Group $group)
   {
     // TODO check if code is not used as tag or group
     $this->_groups[$group->getCode()] = $group;
@@ -41,7 +41,7 @@ class Portfolio
     return null;
   }
 
-  public function addTag(PortfolioTag $tag)
+  public function addTag(Tag $tag)
   {
     // TODO check if code is not used as tag or group
     $this->_tags[$tag->getCode()] = $tag;

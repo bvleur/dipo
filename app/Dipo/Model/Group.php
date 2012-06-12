@@ -1,7 +1,7 @@
 <?php
 namespace Dipo\Model;
 
-class PortfolioGroup extends PortfolioElementContainer
+class Group extends ElementContainer
 {
 
   private $_set_index;

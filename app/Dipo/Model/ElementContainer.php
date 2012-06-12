@@ -1,7 +1,7 @@
 <?php
 namespace Dipo\Model;
 
-abstract class PortfolioElementContainer
+abstract class ElementContainer
 {
 
   private $_elements = array();
@@ -11,7 +11,7 @@ abstract class PortfolioElementContainer
     $code = $element->getCode();
 
     if (array_key_exists($code, $this->_elements))
-      throw new PortfolioDuplicateElementCodeException($this, $element, $this->_elements[$code]);
+      throw new DuplicateElementCodeException($this, $element, $this->_elements[$code]);
 
     $this->_elements[$element->getCode()] = $element;
   }

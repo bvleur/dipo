@@ -1,7 +1,7 @@
 <?php
 namespace Dipo\Model;
 
-class PortfolioTag extends PortfolioElementContainer
+class Tag extends ElementContainer
 {
 
   private $_code;
