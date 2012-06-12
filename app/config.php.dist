@@ -19,6 +19,6 @@ $app['users'] = array(
   array('username' => '', 'password_hash' => '')
 );
 
-/* Instead of a dedicated start page you can open at a specific portfolio group
+/* Instead of a dedicated start page you can open at a specific portfolio group or tag
  */
-// $app['start_group'] = 'schetsboek';
+// $app['start_group_or_tag'] = 'some-group-code-name';

@@ -12,12 +12,12 @@ function config_error($app, $variable, $error_code) {
 }
 
 $app->match('/', function () use ($app) {
-  if (isset($app['start_group'])) {
-    $group = $app['portfolio']->getGroupByCode($app['start_group']);
-    if ($group === null) {
-      return config_error($app, 'start_group', 'invalid');
+  if (isset($app['start_group_or_tag'])) {
+    $container = $app['portfolio']->getContainerByCode($app['start_group_or_tag']);
+    if ($container === null) {
+      return config_error($app, 'start_group_or_tag', 'invalid');
     }
-    return $app->redirect('/portfolio/' . $group->getCode() . '/' . $group->getFirstElement()->getCode());
+    return $app->redirect('/portfolio/' . $container->getCode() . '/' . $container->getFirstElement()->getCode());
   }
   return $app['twig']->render('index.html.twig');
 });
@@ -32,14 +32,17 @@ $app->match('sidebar', function () use ($app) {
   ));
 });
 
-$app->get('/portfolio/{group}/browser-data', function ($group) use ($app) {
-  if (!$group)
+$app->get('/portfolio/{container}/browser-data', function ($container) use ($app) {
+  if (!$container)
     $app->abort(404);
 
-  $group_description = $group->getDescription();
+  /* PortfolioGroups have a shared description, which compresses nicely into a default description field */
+  if ($container instanceof \Dipo\Model\PortfolioGroup) {
+    $default_description = $container->getDescription();
+  }
 
   $elements_data = array();
-  foreach ($group->getElements() as $element) {
+  foreach ($container->getElements() as $element) {
     $html = $app['twig']->render('element.' . $element->getElementType() . '.html.twig', array(
       'element' => $element
     ));
@@ -49,35 +52,35 @@ $app->get('/portfolio/{group}/browser-data', function ($group) use ($app) {
       'html' => $html
     );
 
-    if ($element->getDescription() !== $group_description)
+    if (!(isset($default_description) && $element->getDescription() === $default_description))
       $element_data['description'] = $element->getDescription();
 
     $elements_data[] = $element_data;
   }
 
   $browser_data = array(
-    'description' => $group_description,
+    'description' => $default_description,
     'elements' => $elements_data
   );
 
   return new Response(json_encode($browser_data));
-})->convert('group', array($app['portfolio'], 'getGroupByCode'));
+})->convert('container', array($app['portfolio'], 'getContainerByCode'));
 
-$app->get('/portfolio/{group}/{element}', function ($group, $element) use ($app) {
-  if (!$group)
+$app->get('/portfolio/{container}/{element}', function ($container, $element) use ($app) {
+  if (!$container)
     $app->abort(404);
 
-  $element = $group->getElement($element);
+  $element = $container->getElement($element);
   if (!$element)
     $app->abort(404);
 
   /* The index from the URL is user-facing and thus 1-based */
   return $app['twig']->render('portfolio.html.twig', array(
-    'browsing' => $group,
-    'index' => $group->getIndexOfElement($element),
+    'browsing' => $container,
+    'index' => $container->getIndexOfElement($element),
     'element' => $element
   ));
-})->convert('group', array($app['portfolio'], 'getGroupByCode'));
+})->convert('container', array($app['portfolio'], 'getContainerByCode'));
 
 
 /**

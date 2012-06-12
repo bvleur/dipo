@@ -4,9 +4,11 @@ namespace Dipo\Model;
 class Portfolio
 {
   private $_groups = array();
+  private $_tags = array();
 
   public function addGroup(PortfolioGroup $group)
   {
+    // TODO check if code is not used as tag or group
     $this->_groups[$group->getCode()] = $group;
   }
 
@@ -28,12 +30,21 @@ class Portfolio
     return $groups;
   }
 
-  public function getGroupByCode($code)
+  public function getContainerByCode($code)
   {
-    if (!array_key_exists($code, $this->_groups))
-      return null;
+    if (array_key_exists($code, $this->_groups))
+      return $this->_groups[$code];
 
-    return $this->_groups[$code];
+    if (array_key_exists($code, $this->_tags))
+      return $this->_tags[$code];
+
+    return null;
+  }
+
+  public function addTag(PortfolioTag $tag)
+  {
+    // TODO check if code is not used as tag or group
+    $this->_tags[$tag->getCode()] = $tag;
   }
 
 }

@@ -9,6 +9,7 @@ abstract class PortfolioElement
   private $_height;
   private $_description;
   private $_group;
+  private $_tags;
 
   public function __construct($code, $width, $height)
   {
@@ -40,6 +41,11 @@ abstract class PortfolioElement
   public function getGroup()
   {
     return $this->_group;
+  }
+
+  public function addTag($tag)
+  {
+    $this->_tags[] = $tag;
   }
 
   public function setDescription($description)
