@@ -25,7 +25,7 @@ $app['imagine'] = $app->share(function ($app) {
 });
 
 $app['portfolio'] = $app->share(function ($app) {
-  $database_file = file($app['web_path'] . '/portfolio-content/database.php');
+  $database_file = file($app['web_portfolio_path'] . '/database.php');
   // TODO Handle errors (missing database, damaged file)
   $portfolio = unserialize(base64_decode($database_file[1]));
   return $portfolio;

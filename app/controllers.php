@@ -131,16 +131,15 @@ $app->get('/admin/bijwerken', function () use ($app) {
   if (!$app['session']->has('updater')) {
     $updater = new \Dipo\Updater\Updater(
       $app['content_path'],
-      $app['web_path'],
+      $app['web_portfolio_path'],
       $app['maximum_width'],
-      $app['maximum_height']
+      $app['maximum_height'],
+      $app['updater.imagine_driver']
     );
     $app['session']->set('updater', $updater);
   } else {
     $updater = $app['session']->get('updater');
   }
-
-  $updater->setImagine($app['imagine']);
 
   try {
     $updater->process($app['updater.processing_step_seconds']);

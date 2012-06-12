@@ -2,7 +2,6 @@
 namespace Dipo\Updater;
 
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Yaml\Exception\ParseException;
 use dflydev\markdown\MarkdownParser;
@@ -24,18 +23,13 @@ use dflydev\markdown\MarkdownParser;
  *   For subsequent processing, you call process(..) with a number of seconds
  *   for the maximum processing time. This should be called at least once,
  *   until isDone() or an exception is thrown. To resume processing in a new
- *   request, you can serialize an unserialize the updater. After unserializing
- *   the dependencies must be re-injected (to reduce the serialized-size).
- *
- * Dependencies:
- *   Before calling process() an Imagine instance should be set using setImagine()
+ *   request, you can serialize an unserialize the updater.
  */
 class Updater
 {
   /* configuration */
   private $content_path;
   private $web_path;
-  private $imagine;
 
   /* processing public state */
   private $completed;
@@ -50,22 +44,14 @@ class Updater
   private $group_index;
   private $element_index;
 
-  public function __construct($content_path, $web_path, $maximum_width, $maximum_height)
+  /* model creator */
+  private $image_creator;
+
+  public function __construct($content_path, $web_path, $maximum_width, $maximum_height, $imagine_driver)
   {
     $this->content_path = $content_path;
     $this->web_path = $web_path;
-    $this->maximum_width = $maximum_width;
-    $this->maximum_height = $maximum_height;
-  }
-
-  public function setImagine(\Imagine\Image\ImagineInterface $imagine)
-  {
-    $this->imagine = $imagine;
-  }
-
-  private function __sleep()
-  {
-    unset($this->imagine);
+    $this->image_creator = new ImageCreator($content_path, $web_path, $maximum_width, $maximum_height, $imagine_driver);
   }
 
   public function isDone()
@@ -167,7 +153,7 @@ class Updater
       $element_code = $group_element_codes[$this->element_index];
       $element_metadata = $group_metadata['elements'][$element_code];
 
-      $element = $this->createImage($this->group, $element_code, (array)$element_metadata);
+      $element = $this->image_creator->create($this->group, $element_code, (array)$element_metadata);
       $this->group->addElement($element);
 
       $this->completed++;
@@ -194,11 +180,11 @@ class Updater
     try {
       $group = new \Dipo\Model\Group(
         $code,
-        $this->metadataGet(true, $metadata, 'created-at', 'DateTime'),
-        $this->metadataGet(true, $metadata, 'title'),
-        $this->metadataGet(false, $metadata, 'set', 'integer', 1)
+        self::metadataGet(true, $metadata, 'created-at', 'DateTime'),
+        self::metadataGet(true, $metadata, 'title'),
+        self::metadataGet(false, $metadata, 'set', 'integer', 1)
       );
-      $group->setDescription($this->metadataGet(true, $metadata, 'description', 'markdown-as-html'));
+      $group->setDescription(self::metadataGet(true, $metadata, 'description', 'markdown-as-html'));
     } catch (Exception $e) {
       throw $e->addDetails(array(
         'action' => 'metadata-group',
@@ -209,99 +195,7 @@ class Updater
     return $group;
   }
 
-  private function getMaximumBox()
-  {
-    return new \Imagine\Image\Box($this->maximum_width, $this->maximum_height);
-  }
-
-  private function createImage($group, $code, $metadata)
-  {
-    $content_to_web_types = array(
-      'tiff' => 'jpeg'
-    );
-
-    $filesystem = new Filesystem();
-
-    /* Automatically determine extension of file */
-    $content_path = $this->content_path . '/'. $group->getCode();
-
-    $finder = new Finder();
-    $finder->in($content_path)->depth(0)->name('/^' . $code . '\..*/');
-
-    $files = $finder->getIterator();
-    $files->rewind();
-    $content_file = $files->current();
-
-    if ($content_file === NULL)
-      throw new Exception(array(
-        'action' => 'content-image',
-        'error' => 'file-missing',
-        'group' => $group->getCode(),
-        'element' => $code,
-      ));
-
-    $files->next();
-    if ($files->valid()) {
-      throw new Exception(array(
-        'action' => 'content-image',
-        'error' => 'multiple-files',
-        'group' => $group->getCode(),
-        'element' => $code,
-      ));
-    }
-
-    $content_extension = $content_file->getExtension();
-    $content_type = \Dipo\Model\Image::getTypeForExtension(strtolower($content_extension));
-
-    $auto_web_type = array_key_exists($content_type, $content_to_web_types) ? $content_to_web_types[$content_type] : $content_type;
-    $web_type = strtolower($this->metadataGet(false, $metadata, 'web-type', 'string', $auto_web_type));
-    // TODO validate web-type to be valid
-    $web_extension = \Dipo\Model\Image::getExtensionForType($web_type);
-
-    $web_filepath = $this->web_path . '/portfolio-content/' . $group->getCode() . '/' . $code . '.' .$web_extension;
-
-    try {
-      $content_image = $this->imagine->open($content_file->__toString());
-    } catch (\Imagine\Exception\InvalidArgumentException $e) {
-      throw new Exception(array(
-        'action' => 'content-image',
-        'error' => 'open-error',
-        'group' => $group->getCode(),
-        'element' => $code,
-        'type' => $content_type,
-        'exception_message' => $e->getMessage()
-      ));
-    }
-
-    $size = $content_image->getSize();
-
-    if ($this->getMaximumBox()->contains($size)) {
-      /* No resizing needed. Copy the content */
-      $filesystem->copy($content_file, $web_filepath, true);
-    } else {
-      /* The content file is bigger than the maximum size: resize it an save */
-      $filesystem->mkdir(dirname($web_filepath));
-      $resized_image = $content_image->thumbnail($this->getMaximumBox());
-      $resized_image->save($web_filepath);
-      $size = $resized_image->getSize();
-    }
-
-    $image = new \Dipo\Model\Image($code, $size->getWidth(), $size->getHeight(), $web_type);
-
-    try {
-      $image->setDescription($this->metadataGet(false, $metadata, 'description', 'markdown-as-html'));
-    } catch (Exception $e) {
-      throw $e->addDetails(array(
-        'action' => 'metadata-element',
-        'group' => $group->getCode(),
-        'element' => $code
-      ));
-    }
-
-    return $image;
-  }
-
-  private function metadataGet($required, $data, $key, $type = 'string', $default = null)
+  public static function metadataGet($required, $data, $key, $type = 'string', $default = null)
   {
     if (!array_key_exists($key, $data)) {
       if ($required) {
@@ -338,7 +232,7 @@ class Updater
   {
     /* Write out the portfolio */
     file_put_contents(
-      $this->web_path . '/portfolio-content/database.php',
+      $this->web_path . '/database.php',
       array(
         "<?php header('Location: ../');/*\n",
         base64_encode(serialize($this->portfolio))
