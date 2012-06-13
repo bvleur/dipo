@@ -4,7 +4,6 @@ namespace Dipo\Updater;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Yaml\Exception\ParseException;
-use dflydev\markdown\MarkdownParser;
 
 /**
  * Updates the portfolio:
@@ -94,11 +93,11 @@ class Updater
             'path' => $group_code));
         }
 
-        $group_metadata = $yaml->parse($file_content);
+        $group_metadata = new Metadata($yaml->parse($file_content));
 
         $this->metadata[$file->getRelativePath()] = $group_metadata;
 
-        $this->total += count($group_metadata['elements']);
+        $this->total += count($group_metadata->getChild('elements')->getCount());
       } catch (ParseException $e) {
         throw new Exception(array(
           'action' => 'scan-folders',
@@ -148,18 +147,19 @@ class Updater
         $this->element_index = 0;
       }
 
-      /* Process element */
-      $group_element_codes = array_keys($group_metadata['elements']);
-      $element_code = $group_element_codes[$this->element_index];
-      $element_metadata = $group_metadata['elements'][$element_code];
 
-      $element = $this->image_creator->create($this->group, $element_code, (array)$element_metadata);
+      /* Process element */
+      $elements_metadata = $group_metadata->getChild('elements');
+      $group_element_codes = $elements_metadata->getKeys();
+      $element_code = $group_element_codes[$this->element_index];
+
+      $element = $this->image_creator->create($this->group, $element_code, $elements_metadata->getChild($element_code));
       $this->group->addElement($element);
 
       $this->completed++;
 
       /* Continue with next element */
-      if ($this->element_index + 1 < count($group_metadata['elements'])) {
+      if ($this->element_index + 1 < $elements_metadata->getCount()) {
         $this->element_index++;
       } else {
         /* This group is done, go to next group (if any) */
@@ -180,11 +180,11 @@ class Updater
     try {
       $group = new \Dipo\Model\Group(
         $code,
-        self::metadataGet(true, $metadata, 'created-at', 'DateTime'),
-        self::metadataGet(true, $metadata, 'title'),
-        self::metadataGet(false, $metadata, 'set', 'integer', 1)
+        $metadata->getDateTime('created-at'),
+        $metadata->getString('title'),
+        $metadata->getInteger('set', 1)
       );
-      $group->setDescription(self::metadataGet(true, $metadata, 'description', 'markdown-as-html'));
+      $group->setDescription($metadata->getMarkdownAsHtml('description'));
     } catch (Exception $e) {
       throw $e->addDetails(array(
         'action' => 'metadata-group',
@@ -193,39 +193,6 @@ class Updater
     }
 
     return $group;
-  }
-
-  public static function metadataGet($required, $data, $key, $type = 'string', $default = null)
-  {
-    if (!array_key_exists($key, $data)) {
-      if ($required) {
-        throw new Exception(array(
-          'error' => 'missing',
-          'key' => $key,
-          'data_type' => $type
-        ));
-      } else {
-        return $default;
-      }
-    }
-
-    $value = $data[$key];
-
-    switch ($type) {
-    case 'string':
-      // TODO Figure out non-empty case
-      return $value;
-    case 'integer':
-      // TODO Figure out error handling.
-      return (integer)$value;
-    case 'DateTime':
-      // TODO Figure out error handling.
-      return new \DateTime($value);
-    case 'markdown-as-html':
-      // TODO Figure out error handling.
-      $markdownParser = new \dflydev\markdown\MarkdownParser();
-      return $markdownParser->transformMarkdown($value);
-    }
   }
 
   private function finish()
