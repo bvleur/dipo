@@ -164,7 +164,7 @@ class Updater
       foreach ($metadata_tags as $metadata_tag_key => $metadata_tag_value) {
         $tag = $this->portfolio->getContainerByCode($metadata_tag_key);
         if ($tag === null) {
-          $tag = new \Dipo\Model\Tag($metadata_tag_key, $metadata_tag_value);
+          $tag = new \Dipo\Model\Tag($metadata_tag_key, ($metadata_tag_value != "" ? $metadata_tag_value : $metadata_tag_key));
           $this->portfolio->addTag($tag);
         }
 
