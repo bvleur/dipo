@@ -20,6 +20,15 @@
 {{ element.description|raw}}
 </figcaption>
 
+<div class="elementtags">
+tags:
+<ul>
+{% for tag in element.tags %}
+<li>{{ tag.name }}</li>
+{% endfor %}
+</ul>
+</div>
+
 </figure>
 <script>$('#main-portfolio').portfolioBrowser('{{ element.code }}');</script>
 

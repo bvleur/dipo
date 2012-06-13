@@ -5,6 +5,7 @@
     var dotNav = this.find('.dot-nav li');
     var container = this.find('.elementcontainer');
     var description = this.find('figcaption');
+    var taglist = this.find('.elementtags ul');
     var current = container.find('.element');
     var currentIdx;
 
@@ -83,6 +84,24 @@
 
       /* Update description */
       description.html(element.description || default_description);
+
+      /* Update tags */
+      var newElementTags = element.tags.slice(0); // duplicate the original array
+      var newElementTagNames = $.map(newElementTags, function (a) { return a.name; });
+      taglist.find('li').each(function() {
+        var idx = $.inArray($(this).text(), newElementTagNames);
+        if (idx === -1) {
+          $(this).remove();
+        } else {
+          newElementTags.splice(idx, 1);
+          newElementTagNames.splice(idx, 1);
+        }
+      });
+      $.each(newElementTags, function() {
+        console.log(this);
+        taglist.append('<li>' + this.name + '</li>');
+      });
+
 
       /* Update navigation */
       dotNav.eq(currentIdx).removeClass('current');

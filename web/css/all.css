@@ -93,6 +93,24 @@ figcaption p:last-child {
   color: black;
 }
 
+.elementtags {
+  font-size: 13px;
+  margin: 10px 0;
+}
+
+.elementtags ul {
+  padding: 0;
+  display: inline;
+}
+
+.elementtags li {
+  margin: 0;
+  display: inline;
+  border: 1px #A4AFAF solid;
+  background-color: #D4DFDF;
+  padding: 2px 5px;
+}
+
 /* Utility */
 
 /* Clearfix from h5bp.com/q */

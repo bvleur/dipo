@@ -49,11 +49,16 @@ $app->get('/portfolio/{container}/browser-data', function ($container) use ($app
 
     $element_data = array(
       'id' => $element->getCode(),
-      'html' => $html
+      'html' => $html,
+      'tags' => array()
     );
 
     if (!(isset($default_description) && $element->getDescription() === $default_description)) {
       $element_data['description'] = $element->getDescription();
+    }
+
+    foreach ($element->getTags() as $tag) {
+      $element_data['tags'][] = array('code' => $tag->getCode(), 'name' => $tag->getName());
     }
 
     $elements_data[] = $element_data;
