@@ -52,8 +52,9 @@ $app->get('/portfolio/{container}/browser-data', function ($container) use ($app
       'html' => $html
     );
 
-    if (!(isset($default_description) && $element->getDescription() === $default_description))
+    if (!(isset($default_description) && $element->getDescription() === $default_description)) {
       $element_data['description'] = $element->getDescription();
+    }
 
     $elements_data[] = $element_data;
   }
