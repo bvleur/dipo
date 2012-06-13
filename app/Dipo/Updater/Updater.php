@@ -160,7 +160,7 @@ class Updater
       /* Add tags */
       $element_tags = $element_metadata->getArray('tags', array());
       $group_tags = $group_metadata->getArray('tags', array());
-      $metadata_tags = $element_tags + $group_tags;
+      $metadata_tags = $group_tags + $element_tags;
       foreach ($metadata_tags as $metadata_tag_key => $metadata_tag_value) {
         $tag = $this->portfolio->getContainerByCode($metadata_tag_key);
         if ($tag === null) {
