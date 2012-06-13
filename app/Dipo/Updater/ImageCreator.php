@@ -104,8 +104,9 @@ class ImageCreator
   private function addMetadata($image, $metadata)
   {
     try {
-      if ($metadata->has('description'))
+      if ($metadata->has('description')) {
         $image->setDescription($metadata->getMarkdownAsHtml('description'));
+      }
     } catch (Exception $e) {
       throw $e->addDetails(array('action' => 'metadata-element'));
     }
