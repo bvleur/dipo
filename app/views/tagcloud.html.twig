@@ -1,0 +1,7 @@
+<nav id="tagcloud" class="sidebar">
+<ul>
+{% for tag in tags %}
+<li class="tagweight{{ (tag.getElementCount() // (maximum_element_count / 4))}}"><a href="/portfolio/{{ tag.code }}/{{ tag.getFirstElement.code }}">{{ tag.name }}</a></li>
+{% endfor %}
+</ul>
+</nav>

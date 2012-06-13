@@ -24,6 +24,9 @@
   <div id="main-content">
     {% block content %}{% endblock %}
   </div>
+  {% block tagcloud %}
+  {{ render('/tagcloud') }}
+  {% endblock %}
 </div>
 
 </body>

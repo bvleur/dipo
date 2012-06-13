@@ -47,4 +47,9 @@ class Portfolio
     $this->_tags[$tag->getCode()] = $tag;
   }
 
+  public function getTags()
+  {
+    return $this->_tags;
+  }
+
 }
