@@ -11,7 +11,7 @@ abstract class ElementContainer
     $code = $element->getCode();
 
     if (array_key_exists($code, $this->_elements))
-      throw new DuplicateElementCodeException($this, $element, $this->_elements[$code]);
+      throw new DuplicateCodeException($this, $element, $this->_elements[$code]);
 
     $this->_elements[$element->getCode()] = $element;
   }
