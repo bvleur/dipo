@@ -9,7 +9,7 @@ abstract class Element
   private $_height;
   private $_description;
   private $_group;
-  private $_tags;
+  private $_tags = array();
 
   public function __construct($code, $width, $height)
   {
@@ -47,6 +47,11 @@ abstract class Element
   {
     $this->_tags[] = $tag;
     $tag->addElement($this);
+  }
+
+  public function getTags()
+  {
+    return $this->_tags;
   }
 
   public function setDescription($description)
