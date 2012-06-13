@@ -28,7 +28,8 @@ $app->match('/', function () use ($app) {
 
 $app->match('sidebar', function () use ($app) {
   return $app['twig']->render('sidebar.html.twig', array(
-    'portfolio_groups' => $app['portfolio']->getGroupsSorted()
+    'portfolio_groups' => $app['portfolio']->getGroupsSorted(),
+    'browsing_code' => $app['request']->get('browsing_code', '')
   ));
 });
 
@@ -37,7 +38,8 @@ $app->match('tagcloud', function () use ($app) {
   $maximum_element_count = array_reduce($tags, function ($max, $tag) { return max($tag->getElementCount(),  $max); }, 0);
   return $app['twig']->render('tagcloud.html.twig', array(
     'maximum_element_count' => $maximum_element_count,
-    'tags' => $tags
+    'tags' => $tags,
+    'browsing_code' => $app['request']->get('browsing_code', '')
   ));
 });
 

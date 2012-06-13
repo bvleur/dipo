@@ -54,6 +54,13 @@ body {
   text-decoration: underline;
 }
 
+.sidebar #current-page {
+  background-color: black;
+}
+.sidebar #current-page a {
+  color: white;
+}
+
 #tagcloud {
   text-align: center;
 }
