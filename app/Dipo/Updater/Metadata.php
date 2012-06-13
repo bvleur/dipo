@@ -70,6 +70,12 @@ class Metadata
     return $markdownParser->transformMarkdown($value);
   }
 
+  public function getArray($key, $default = null)
+  {
+    $value = $this->getRequiredValue($key, $default);
+    return (array)$value;
+  }
+
   /* If the key is missing and no default is supplied (default == null):
    *   - Throw an exception
    * If the key is missing and a default is supplied (default != null):

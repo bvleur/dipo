@@ -46,6 +46,7 @@ abstract class Element
   public function addTag($tag)
   {
     $this->_tags[] = $tag;
+    $tag->addElement($this);
   }
 
   public function setDescription($description)

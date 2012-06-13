@@ -23,10 +23,4 @@ class Tag extends ElementContainer
     return $this->_name;
   }
 
-  public function addElement($element)
-  {
-    parent::addElement($element);
-    $element->addTag($this);
-  }
-
 }

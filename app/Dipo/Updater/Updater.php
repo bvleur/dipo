@@ -152,9 +152,24 @@ class Updater
       $elements_metadata = $group_metadata->getChild('elements');
       $group_element_codes = $elements_metadata->getKeys();
       $element_code = $group_element_codes[$this->element_index];
+      $element_metadata = $elements_metadata->getChild($element_code);
 
-      $element = $this->image_creator->create($this->group, $element_code, $elements_metadata->getChild($element_code));
+      $element = $this->image_creator->create($this->group, $element_code, $element_metadata);
       $this->group->addElement($element);
+
+      /* Add tags */
+      $element_tags = $element_metadata->getArray('tags', array());
+      $group_tags = $group_metadata->getArray('tags', array());
+      $metadata_tags = $element_tags + $group_tags;
+      foreach ($metadata_tags as $metadata_tag_key => $metadata_tag_value) {
+        $tag = $this->portfolio->getContainerByCode($metadata_tag_key);
+        if ($tag === null) {
+          $tag = new \Dipo\Model\Tag($metadata_tag_key, $metadata_tag_value);
+          $this->portfolio->addTag($tag);
+        }
+
+        $element->addTag($tag);
+      }
 
       $this->completed++;
 
