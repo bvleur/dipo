@@ -75,9 +75,12 @@ $app->get('/portfolio/{container}/browser-data', function ($container) use ($app
   }
 
   $browser_data = array(
-    'description' => $default_description,
     'elements' => $elements_data
   );
+
+  if (isset($default_description)) {
+    $browser_data['description'] = $default_description;
+  }
 
   return new Response(json_encode($browser_data));
 })->convert('container', array($app['portfolio'], 'getContainerByCode'));
