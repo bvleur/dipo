@@ -20,17 +20,19 @@
 <figcaption>
 {{ element.description|raw}}
 </figcaption>
+</figure>
 
-<div class="elementtags">
+<div class="elementtags cf">
 tags:
 <ul>
+{% spaceless %}
 {% for tag in element.tags %}
 <li>{{ tag.name }}</li>
 {% endfor %}
+{% endspaceless %}
 </ul>
 </div>
 
-</figure>
 <script>$('#main-portfolio').portfolioBrowser('{{ element.code }}');</script>
 
 {% endblock %}

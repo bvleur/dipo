@@ -154,8 +154,8 @@ figcaption p:last-child {
 }
 
 .elementtags li {
-  margin: 0;
-  display: inline;
+  margin: 0 1px;
+  display: inline-block;
   border: 1px #A4AFAF solid;
   background-color: #D4DFDF;
   padding: 2px 5px;
