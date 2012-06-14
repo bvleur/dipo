@@ -85,9 +85,12 @@ body {
   color: red
 }
 
+#main-portfolio {
+  margin: 10px;
+}
+
 figure  {
   width: 700px;
-  margin: 10px;
 }
 
 figure .elementcontainer {

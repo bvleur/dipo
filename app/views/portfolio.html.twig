@@ -2,8 +2,8 @@
 {% block browsing_code browsing.code %}
 
 {% block content %}
-
-<figure id="main-portfolio">
+<div id="main-portfolio">
+<figure>
 <div class="elementcontainer">
 {% include "element.#{element.getElementType}.html.twig" %}
 </div>
@@ -35,4 +35,5 @@ tags:
 
 <script>$('#main-portfolio').portfolioBrowser('{{ element.code }}');</script>
 
+</div>
 {% endblock %}
