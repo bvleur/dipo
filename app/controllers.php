@@ -70,7 +70,11 @@ $app->get('/portfolio/{container}/browser-data', function ($container) use ($app
     }
 
     foreach ($element->getTags() as $tag) {
-      $element_data['tags'][] = array('code' => $tag->getCode(), 'name' => $tag->getName());
+      $element_data['tags'][] = array(
+        'code' => $tag->getCode(),
+        'name' => $tag->getName(),
+        'firstElementCode' => $tag->getFirstElement()->getCode()
+      );
     }
 
     $elements_data[] = $element_data;

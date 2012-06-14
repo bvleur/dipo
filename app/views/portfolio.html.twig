@@ -27,13 +27,12 @@ tags:
 <ul>
 {% spaceless %}
 {% for tag in element.tags %}
-<li>{{ tag.name }}</li>
+<li><a href="/portfolio/{{ tag.code }}/{{ tag.getFirstElement.code }}">{{ tag.name }}</a></li>
 {% endfor %}
 {% endspaceless %}
 </ul>
 </div>
 
 <script>$('#main-portfolio').portfolioBrowser('{{ element.code }}');</script>
-
 </div>
 {% endblock %}

@@ -98,7 +98,7 @@
         }
       });
       $.each(newElementTags, function() {
-        taglist.append('<li>' + this.name + '</li>');
+        taglist.append('<li><a href="/portfolio/' + this.code + '/' + this.firstElementCode + '">' + this.name + '</a></li>');
       });
 
 
