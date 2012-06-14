@@ -87,7 +87,7 @@
 
       /* Update tags */
       var newElementTags = element.tags.slice(0); // duplicate the original array
-      var newElementTagNames = $.map(newElementTags, function (a) { return a.name; });
+      var newElementTagNames = $.map(newElementTags, function (a) { return a.name + ""; });
       taglist.find('li').each(function() {
         var idx = $.inArray($(this).text(), newElementTagNames);
         if (idx === -1) {
@@ -98,7 +98,6 @@
         }
       });
       $.each(newElementTags, function() {
-        console.log(this);
         taglist.append('<li>' + this.name + '</li>');
       });
 
