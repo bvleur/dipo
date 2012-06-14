@@ -98,7 +98,7 @@
         }
       });
       $.each(newElementTags, function() {
-        taglist.append('<li><a href="/portfolio/' + this.code + '/' + this.firstElementCode + '">' + this.name + '</a></li>');
+        taglist.append('<li><a href="/portfolio/' + this.code + '/' + this.firstElementId + '">' + this.name + '</a></li>');
       });
 
 
@@ -108,7 +108,7 @@
 
       /* Change the URL (ignore older browsers) */
       if (Modernizr.history && noPushState)
-        window.history.pushState({id: id}, null, id);
+        window.history.pushState({id: id}, null, encodeURIComponent(id));
     }
 
     /* Preload the previous and next elements by already requesting the element on stage */
@@ -124,7 +124,7 @@
     /* Make existing navigation elements in the page use this portfolio browser for switching */
     function attachToNavigation() {
       dotNav.find('a').click(function (e) {
-        showElement($(this).attr('href'), true);
+        showElement(decodeURIComponent($(this).attr('href')), true);
         return false;
       });
 
@@ -133,7 +133,7 @@
           console.log('popstate:' + event.state.id);
           showElement(event.state.id);
         }
-        window.history.replaceState({id: initialId}, null, initialId);
+        window.history.replaceState({id: initialId}, null);
       }
     }
 

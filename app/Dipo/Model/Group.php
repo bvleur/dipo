@@ -17,6 +17,11 @@ class Group extends ElementContainer
     $this->_set_index = $set_index;
   }
 
+  public function getElementId($element)
+  {
+    return $element->getCode();
+  }
+
   public function getSetIndex()
   {
     return $this->_set_index;

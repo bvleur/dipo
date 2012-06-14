@@ -60,7 +60,7 @@ $app->get('/portfolio/{container}/browser-data', function ($container) use ($app
     ));
 
     $element_data = array(
-      'id' => $element->getCode(),
+      'id' => $container->getElementId($element),
       'html' => $html,
       'tags' => array()
     );
@@ -73,7 +73,7 @@ $app->get('/portfolio/{container}/browser-data', function ($container) use ($app
       $element_data['tags'][] = array(
         'code' => $tag->getCode(),
         'name' => $tag->getName(),
-        'firstElementCode' => $tag->getFirstElement()->getCode()
+        'firstElementId' => $tag->getElementId($tag->getFirstElement())
       );
     }
 

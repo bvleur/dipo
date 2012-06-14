@@ -6,14 +6,17 @@ abstract class ElementContainer
 
   private $_elements = array();
 
+  abstract public function getElementId($element);
+
   public function addElement($element)
   {
-    $code = $element->getCode();
+    $id = $this->getElementId($element);
 
-    if (array_key_exists($code, $this->_elements))
-      throw new DuplicateCodeException($this, $element, $this->_elements[$code]);
+    if (array_key_exists($id, $this->_elements)) {
+      throw new DuplicateCodeException($this, $element, $this->_elements[$id]);
+    }
 
-    $this->_elements[$element->getCode()] = $element;
+    $this->_elements[$id] = $element;
   }
 
   public function getElements()
@@ -21,12 +24,12 @@ abstract class ElementContainer
     return $this->_elements;
   }
 
-  public function getElement($code)
+  public function getElement($id)
   {
-    if (!array_key_exists($code, $this->_elements))
+    if (!array_key_exists($id, $this->_elements))
       return null;
 
-    return $this->_elements[$code];
+    return $this->_elements[$id];
   }
 
   public function getElementCount()
@@ -41,11 +44,12 @@ abstract class ElementContainer
 
   public function getIndexOfElement($element)
   {
+    $id = $this->getElementId($element);
     $keys = array_flip(array_keys($this->_elements));
-    if (!array_key_exists($element->getCode(), $keys))
+    if (!array_key_exists($id, $keys))
       return null;
 
-    return $keys[$element->getCode()];
+    return $keys[$id];
   }
 
 }

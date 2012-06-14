@@ -13,6 +13,11 @@ class Tag extends ElementContainer
     $this->_name = $name;
   }
 
+  public function getElementId($element)
+  {
+    return $element->getGroup()->getCode() . '.' . $element->getCode();
+  }
+
   public function getCode()
   {
     return $this->_code;

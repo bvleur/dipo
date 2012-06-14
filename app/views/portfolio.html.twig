@@ -12,7 +12,7 @@
 <ul>
   {% for el in browsing.elements %}
   <li {% if el is sameas(element) %}class="current"{% endif %}>
-  <a href="{{ el.code }}">o</a></li>
+  <a href="{{ browsing.getElementId(el)|url_encode }}">o</a></li>
   {% endfor %}
 </ul>
 </nav>
@@ -27,12 +27,12 @@ tags:
 <ul>
 {% spaceless %}
 {% for tag in element.tags %}
-<li><a href="/portfolio/{{ tag.code }}/{{ tag.getFirstElement.code }}">{{ tag.name }}</a></li>
+<li><a href="/portfolio/{{ tag.code }}/{{ tag.getElementId(tag.getFirstElement)|url_encode }}">{{ tag.name }}</a></li>
 {% endfor %}
 {% endspaceless %}
 </ul>
 </div>
 
-<script>$('#main-portfolio').portfolioBrowser('{{ element.code }}');</script>
+<script>$('#main-portfolio').portfolioBrowser('{{ browsing.getElementId(element) }}');</script>
 </div>
 {% endblock %}
