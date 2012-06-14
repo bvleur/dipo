@@ -114,7 +114,7 @@ figcaption {
   background-color: #d4dfdf;
   padding: 10px;
   height: 50px;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 figcaption p:first-child {
