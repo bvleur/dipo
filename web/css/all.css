@@ -2,6 +2,15 @@ body {
   background-image: url('../images/tex2res5-blue.png');
 }
 
+a {
+  text-decoration: none;
+  color: black;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
 #topbar {
   display: table;
   width: 100%;
@@ -43,15 +52,6 @@ body {
 
 .sidebar ul li {
   padding: 3px 0;
-}
-
-.sidebar a {
-  text-decoration: none;
-  color: black;
-}
-
-.sidebar a:hover {
-  text-decoration: underline;
 }
 
 .sidebar #current-page {
@@ -123,6 +123,10 @@ figcaption p:first-child {
 
 figcaption p:last-child {
   margin-bottom: 0;
+}
+
+figcaption a {
+  text-decoration: underline;
 }
 
 .dot-nav {
