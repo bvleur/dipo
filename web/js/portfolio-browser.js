@@ -5,7 +5,8 @@
     var dotNav = this.find('.dot-nav li');
     var container = this.find('.elementcontainer');
     var description = this.find('figcaption');
-    var taglist = this.find('.elementtags ul');
+    var tagcontainer = this.find('.elementtags');
+    var taglist = tagcontainer.find('ul');
     var current = container.find('.element');
     var currentIdx;
 
@@ -143,6 +144,8 @@
           }
         }
       });
+
+      tagcontainer.toggle((elementTags.length !== 0));
     }
 
     /* Preload the previous and next elements by already requesting the element on stage */

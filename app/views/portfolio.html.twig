@@ -22,7 +22,7 @@
 </figcaption>
 </figure>
 
-<div class="elementtags cf">
+<div class="elementtags cf" {% if element.tags|length == 0 %}style="display: none"{% endif %}>
 tags:
 <ul>
 {% spaceless %}
