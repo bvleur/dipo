@@ -47,9 +47,22 @@ class Portfolio
     $this->_tags[$tag->getCode()] = $tag;
   }
 
-  public function getTags()
+  /* Return all tags used in the portfolio alphabetically (numeric tags last)
+   */
+  public function getTagsSorted()
   {
-    return $this->_tags;
+    $tags = $this->_tags;
+    usort($tags, function ($a, $b) {
+      if (is_numeric($a->getName()) && !is_numeric($b->getName())) {
+        return 1;
+      }
+      if (!is_numeric($a->getName()) && is_numeric($b->getName())) {
+        return -1;
+      }
+      return strcasecmp($a->getName(), $b->getName());
+    });
+
+    return $tags;
   }
 
 }
