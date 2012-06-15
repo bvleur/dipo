@@ -158,9 +158,11 @@ figcaption a {
 .elementtags ul {
   padding: 0;
   display: inline;
+  font-size: 0; /* hack for missing support for white-space-collapse:discard */
 }
 
 .elementtags li {
+  font-size: 13px;
   margin: 0 1px;
   display: inline-block;
   border: 1px #A4AFAF solid;
