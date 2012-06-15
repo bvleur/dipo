@@ -1,7 +1,12 @@
 <nav id="tagcloud" class="sidebar">
 <ul>
+{% if (maximum_element_count % 4) == 0 %}
+{% set divider = (maximum_element_count // 4) %}
+{% else %}
+{% set divider = (maximum_element_count // 4) + 1 %}
+{% endif %}
 {% for tag in tags %}
-<li class="tagweight{{ (tag.getElementCount() // (maximum_element_count / 4))}}" {% if browsing_code == tag.code %}id="current-page"{% endif %}>
+<li class="tagweight{{ 1 + (tag.getElementCount() // divider)}}" {% if browsing_code == tag.code %}id="current-page"{% endif %}>
 <a href="/portfolio/{{ tag.code }}/{{ tag.getElementId(tag.getFirstElement)|url_encode }}">{{ tag.name }}</a>
 </li>
 {% endfor %}
