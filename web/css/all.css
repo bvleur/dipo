@@ -41,7 +41,7 @@ a:hover {
   width: 160px;
   height: 750px;
   margin: 0 10px;
-  padding: 0 10px;
+  padding: 0 5px;
   background-color: #FFF;
   height: 700px;
 }
@@ -54,6 +54,17 @@ a:hover {
 
 .sidebar ul li {
   padding: 3px 0;
+}
+
+.sidebar#tagcloud ul li {
+  padding: 1px 0;
+}
+.sidebar#tagcloud ul li a {
+  padding: 2px 5px;
+}
+
+.sidebar#menu ul li a {
+  padding: 2px 5px;
 }
 
 .sidebar #current-page {
