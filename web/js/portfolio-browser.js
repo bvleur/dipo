@@ -167,7 +167,6 @@
 
       if (Modernizr.history) {
         window.onpopstate = function (event) {
-          console.log('popstate:' + event.state.id);
           showElement(event.state.id);
         }
         window.history.replaceState({id: initialId}, null);
