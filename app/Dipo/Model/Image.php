@@ -1,7 +1,7 @@
 <?php
 namespace Dipo\Model;
 
-class PortfolioImage extends PortfolioElement
+class Image extends Element
 {
   private static $type_extension = array(
       'jpeg' => 'jpg',

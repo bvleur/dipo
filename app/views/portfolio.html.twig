@@ -1,8 +1,9 @@
 {% extends layout %}
+{% block browsing_code browsing.code %}
 
 {% block content %}
-
-<figure id="main-portfolio">
+<div id="main-portfolio">
+<figure>
 <div class="elementcontainer">
 {% include "element.#{element.getElementType}.html.twig" %}
 </div>
@@ -11,7 +12,7 @@
 <ul>
   {% for el in browsing.elements %}
   <li {% if el is sameas(element) %}class="current"{% endif %}>
-  <a href="{{ el.code }}">o</a></li>
+  <a href="{{ browsing.getElementId(el)|url_encode }}">o</a></li>
   {% endfor %}
 </ul>
 </nav>
@@ -19,8 +20,19 @@
 <figcaption>
 {{ element.description|raw}}
 </figcaption>
-
 </figure>
-<script>$('#main-portfolio').portfolioBrowser('{{ element.code }}');</script>
 
+<div class="elementtags cf">
+tags:
+<ul>
+{% spaceless %}
+{% for tag in element.tags %}
+<li><a href="/portfolio/{{ tag.code }}/{{ tag.getElementId(tag.getFirstElement)|url_encode }}">{{ tag.name }}</a></li>
+{% endfor %}
+{% endspaceless %}
+</ul>
+</div>
+
+<script>$('#main-portfolio').portfolioBrowser('{{ browsing.getElementId(element) }}');</script>
+</div>
 {% endblock %}

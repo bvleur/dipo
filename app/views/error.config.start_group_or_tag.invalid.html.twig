@@ -1,0 +1,21 @@
+{% extends "layout.error.config.html.twig" %}
+
+{% block error %}
+<h3>Ingestelde start-groep of start-tag bestaat niet.</h3>
+
+<p>
+De ingestelde start-groep of start-tag (<code>start_group_or_tag</code>): <code>{{ variable_value }}</code> bestaat niet.
+</p>
+
+<section class="causes">
+Mogelijke oorzaken voor dit probleem zijn:
+<ul>
+  <li>De ingestelde codenaam van de groep of tag bevat een typefout</li>
+  <li>Het portfolio is nog niet bijgewerkt en daardoor wordt de nieuwe groep of tag niet herkend.</li>
+</ul>
+</section>
+
+<p class="tip">
+Gebruik zoveel mogelijk kleine letters in groepsnamen en tags.
+</p>
+{% endblock %}

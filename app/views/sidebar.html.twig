@@ -1,4 +1,4 @@
-<nav id="sidebar">
+<nav id="menu" class="sidebar">
 
 {% set last_set_index = null %}
 {% for group in portfolio_groups %}
@@ -9,7 +9,7 @@
 <ul class="sidebargroup portfolioset">
 {% endif %}
 
-<li><a href="/portfolio/{{ group.code }}/{{ group.getFirstElement.code }}">{{ group.name }}</a></li>
+<li {% if browsing_code == group.code %}id="current-page"{% endif %}><a href="/portfolio/{{ group.code }}/{{ group.getFirstElement.code }}">{{ group.name }}</a></li>
 
 {% endfor %}
 </ul>

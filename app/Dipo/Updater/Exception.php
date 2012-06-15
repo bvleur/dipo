@@ -1,7 +1,7 @@
 <?php
-namespace Dipo;
+namespace Dipo\Updater;
 
-class PortfolioUpdaterException extends \Exception
+class Exception extends \Exception
 {
   private $details;
 

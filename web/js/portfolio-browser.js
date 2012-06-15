@@ -5,6 +5,7 @@
     var dotNav = this.find('.dot-nav li');
     var container = this.find('.elementcontainer');
     var description = this.find('figcaption');
+    var taglist = this.find('.elementtags ul');
     var current = container.find('.element');
     var currentIdx;
 
@@ -84,13 +85,64 @@
       /* Update description */
       description.html(element.description || default_description);
 
+      /* Update tags */
+      updateTags(element.tags)
+
       /* Update navigation */
       dotNav.eq(currentIdx).removeClass('current');
       dotNav.eq(idx).addClass('current');
 
       /* Change the URL (ignore older browsers) */
       if (Modernizr.history && noPushState)
-        window.history.pushState({id: id}, null, id);
+        window.history.pushState({id: id}, null, encodeURIComponent(id));
+    }
+
+    function updateTags(elementTags) {
+      /* Determine mutations (movements, removals, additions) */
+      var elementTagNames = $.map(elementTags, function (a) { return a.name + ""; });
+      var notNew = [];
+      var toRemove = [];
+      var toMove = [];
+
+      taglist.find('li').each(function(currentIndex) {
+        var newIndex = $.inArray($(this).text(), elementTagNames);
+        if (newIndex === -1) {
+          toRemove.push(this)
+        } else {
+          notNew.push(newIndex);
+          if (newIndex != currentIndex) {
+            toMove.push({tag: this, from: currentIndex, to: newIndex});
+          }
+        }
+      });
+
+      /* Effectuate mutations */
+      $.each(toRemove, function (index, tag) { $(tag).remove(); });
+      $.each(elementTags, function (index, elementTag) {
+        if ($.inArray(index, notNew) === -1) {
+          var newTag = '<li><a href="/portfolio/' + elementTag.code + '/' + elementTag.firstElementId + '">' + elementTag.name + '</a></li>';
+          if (index == 0) {
+            taglist.prepend(newTag);
+          } else {
+            taglist.find('li').eq(index - 1).after(newTag);
+          }
+        }
+      });
+
+      $.each(toMove, function (index, movement) {
+        if (taglist.find('li').eq(movement.to).is(movement.tag)) {
+          return;
+        }
+        if (movement.to == 0) {
+          taglist.find('li').eq(0).before($(movement.tag));
+        } else {
+          if (movement.from < movement.to) {
+            taglist.find('li').eq(movement.to).after($(movement.tag));
+          } else {
+            taglist.find('li').eq(movement.to - 1).after($(movement.tag));
+          }
+        }
+      });
     }
 
     /* Preload the previous and next elements by already requesting the element on stage */
@@ -106,7 +158,7 @@
     /* Make existing navigation elements in the page use this portfolio browser for switching */
     function attachToNavigation() {
       dotNav.find('a').click(function (e) {
-        showElement($(this).attr('href'), true);
+        showElement(decodeURIComponent($(this).attr('href')), true);
         return false;
       });
 
@@ -115,7 +167,7 @@
           console.log('popstate:' + event.state.id);
           showElement(event.state.id);
         }
-        window.history.replaceState({id: initialId}, null, initialId);
+        window.history.replaceState({id: initialId}, null);
       }
     }
 

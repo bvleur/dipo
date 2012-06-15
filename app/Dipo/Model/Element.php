@@ -1,7 +1,7 @@
 <?php
 namespace Dipo\Model;
 
-abstract class PortfolioElement
+abstract class Element
 {
 
   private $_code;
@@ -9,6 +9,7 @@ abstract class PortfolioElement
   private $_height;
   private $_description;
   private $_group;
+  private $_tags = array();
 
   public function __construct($code, $width, $height)
   {
@@ -40,6 +41,17 @@ abstract class PortfolioElement
   public function getGroup()
   {
     return $this->_group;
+  }
+
+  public function addTag($tag)
+  {
+    $this->_tags[] = $tag;
+    $tag->addElement($this);
+  }
+
+  public function getTags()
+  {
+    return $this->_tags;
   }
 
   public function setDescription($description)

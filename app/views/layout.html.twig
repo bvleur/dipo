@@ -19,11 +19,14 @@
     {% include 'topbar.html.twig' %}
   </div>
   {% block sidebar %}
-  {{ render('/sidebar') }}
+  {{ render('/sidebar?browsing_code=' ~ block('browsing_code')) }}
   {% endblock %}
   <div id="main-content">
     {% block content %}{% endblock %}
   </div>
+  {% block tagcloud %}
+  {{ render('/tagcloud?browsing_code=' ~ block('browsing_code')) }}
+  {% endblock %}
 </div>
 
 </body>

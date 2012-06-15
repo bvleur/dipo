@@ -12,12 +12,12 @@ function config_error($app, $variable, $error_code) {
 }
 
 $app->match('/', function () use ($app) {
-  if (isset($app['start_group'])) {
-    $group = $app['portfolio']->getGroupByCode($app['start_group']);
-    if ($group === null) {
-      return config_error($app, 'start_group', 'invalid');
+  if (isset($app['start_group_or_tag'])) {
+    $container = $app['portfolio']->getContainerByCode($app['start_group_or_tag']);
+    if ($container === null) {
+      return config_error($app, 'start_group_or_tag', 'invalid');
     }
-    return $app->redirect('/portfolio/' . $group->getCode() . '/' . $group->getFirstElement()->getCode());
+    return $app->redirect('/portfolio/' . $container->getCode() . '/' . $container->getFirstElement()->getCode());
   }
   return $app['twig']->render('index.html.twig');
 });
@@ -28,56 +28,84 @@ $app->match('/', function () use ($app) {
 
 $app->match('sidebar', function () use ($app) {
   return $app['twig']->render('sidebar.html.twig', array(
-    'portfolio_groups' => $app['portfolio']->getGroupsSorted()
+    'portfolio_groups' => $app['portfolio']->getGroupsSorted(),
+    'browsing_code' => $app['request']->get('browsing_code', '')
   ));
 });
 
-$app->get('/portfolio/{group}/browser-data', function ($group) use ($app) {
-  if (!$group)
+$app->match('tagcloud', function () use ($app) {
+  $tags = $app['portfolio']->getTagsSorted();
+  $maximum_element_count = array_reduce($tags, function ($max, $tag) { return max($tag->getElementCount(),  $max); }, 0);
+  return $app['twig']->render('tagcloud.html.twig', array(
+    'maximum_element_count' => $maximum_element_count,
+    'tags' => $tags,
+    'browsing_code' => $app['request']->get('browsing_code', '')
+  ));
+});
+
+
+$app->get('/portfolio/{container}/browser-data', function ($container) use ($app) {
+  if (!$container)
     $app->abort(404);
 
-  $group_description = $group->getDescription();
+  /* Groups have a shared description, which compresses nicely into a default description field */
+  if ($container instanceof \Dipo\Model\Group) {
+    $default_description = $container->getDescription();
+  }
 
   $elements_data = array();
-  foreach ($group->getElements() as $element) {
+  foreach ($container->getElements() as $element) {
     $html = $app['twig']->render('element.' . $element->getElementType() . '.html.twig', array(
       'element' => $element
     ));
 
     $element_data = array(
-      'id' => $element->getCode(),
-      'html' => $html
+      'id' => $container->getElementId($element),
+      'html' => $html,
+      'tags' => array()
     );
 
-    if ($element->getDescription() !== $group_description)
+    if (!(isset($default_description) && $element->getDescription() === $default_description)) {
       $element_data['description'] = $element->getDescription();
+    }
+
+    foreach ($element->getTags() as $tag) {
+      $element_data['tags'][] = array(
+        'code' => $tag->getCode(),
+        'name' => $tag->getName(),
+        'firstElementId' => $tag->getElementId($tag->getFirstElement())
+      );
+    }
 
     $elements_data[] = $element_data;
   }
 
   $browser_data = array(
-    'description' => $group_description,
     'elements' => $elements_data
   );
 
-  return new Response(json_encode($browser_data));
-})->convert('group', array($app['portfolio'], 'getGroupByCode'));
+  if (isset($default_description)) {
+    $browser_data['description'] = $default_description;
+  }
 
-$app->get('/portfolio/{group}/{element}', function ($group, $element) use ($app) {
-  if (!$group)
+  return new Response(json_encode($browser_data));
+})->convert('container', array($app['portfolio'], 'getContainerByCode'));
+
+$app->get('/portfolio/{container}/{element}', function ($container, $element) use ($app) {
+  if (!$container)
     $app->abort(404);
 
-  $element = $group->getElement($element);
+  $element = $container->getElement($element);
   if (!$element)
     $app->abort(404);
 
   /* The index from the URL is user-facing and thus 1-based */
   return $app['twig']->render('portfolio.html.twig', array(
-    'browsing' => $group,
-    'index' => $group->getIndexOfElement($element),
+    'browsing' => $container,
+    'index' => $container->getIndexOfElement($element),
     'element' => $element
   ));
-})->convert('group', array($app['portfolio'], 'getGroupByCode'));
+})->convert('container', array($app['portfolio'], 'getContainerByCode'));
 
 
 /**
@@ -125,42 +153,41 @@ $app->get('/admin', function () use ($app) {
 $app->get('/admin/bijwerken', function () use ($app) {
   /* Start a new updater or continue with a running one */
   // TODO Prevent concurrent runs (due to user interruption): use locking
-  if (!$app['session']->has('portfolio_updater')) {
-    $portfolio_updater = new Dipo\PortfolioUpdater(
+  if (!$app['session']->has('updater')) {
+    $updater = new \Dipo\Updater\Updater(
       $app['content_path'],
-      $app['web_path'],
+      $app['web_portfolio_path'],
       $app['maximum_width'],
-      $app['maximum_height']
+      $app['maximum_height'],
+      $app['updater.imagine_driver']
     );
-    $app['session']->set('portfolio_updater', $portfolio_updater);
+    $app['session']->set('updater', $updater);
   } else {
-    $portfolio_updater = $app['session']->get('portfolio_updater');
+    $updater = $app['session']->get('updater');
   }
-
-  $portfolio_updater->setImagine($app['imagine']);
 
   try {
-    $portfolio_updater->process($app['updater.processing_step_seconds']);
-  } catch (Dipo\PortfolioUpdaterException $pue) {
-    $failure = $pue;
+    $updater->process($app['updater.processing_step_seconds']);
+  } catch (\Dipo\Updater\Exception $e) {
+    $failure = $e;
   }
 
-  /* If the portfolio updater is done, we can forget */
-  if ($portfolio_updater->isDone() || isset($failure)) {
-    $app['session']->remove('portfolio_updater');
+  /* If the updater is done, we can forget */
+  if ($updater->isDone() || isset($failure)) {
+    $app['session']->remove('updater');
   }
 
   return $app['twig']->render('update.html.twig',
     array(
       'user' => $app['session']->get('user'),
-      'total' => $portfolio_updater->getTotal(),
-      'completed' => $portfolio_updater->getCompleted(),
-      'is_done' => $portfolio_updater->isDone(),
+      'total' => $updater->getTotal(),
+      'completed' => $updater->getCompleted(),
+      'is_done' => $updater->isDone(),
       'failure' => isset($failure) ? $failure->getDetails() : false
     ));
 })->middleware($must_be_logged_in);
 
 $app->get('/admin/bijwerken/annuleren', function () use ($app) {
-  $app['session']->remove('portfolio_updater');
+  $app['session']->remove('updater');
   return $app->redirect('/admin');
 })->middleware($must_be_logged_in);

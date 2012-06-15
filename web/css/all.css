@@ -2,43 +2,95 @@ body {
   background-image: url('../images/tex2res5-blue.png');
 }
 
+a {
+  text-decoration: none;
+  color: black;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+#topbar {
+  display: table;
+  width: 100%;
+  height: 80px;
+}
+
 #topbar h1 {
   display: block;
   text-align: center;
   margin: 0;
   font-weight: normal;
-  padding: 20px 0 20px 200px;
   color: #000077;
   font-size: 32pt;
+  display: table-cell;
+  vertical-align: middle;
 }
 
 #main-container {
-  background-color: #FFF;
   margin: 20px auto;
-  width: 900px;
+  width: 1120px;
+  height: 750px;
 }
 
-#sidebar {
-  width: 180px;
-  float: left
-}
-
-#sidebar ul {
+.sidebar {
+  float: left;
+  width: 160px;
+  height: 750px;
+  margin: 0 10px;
   padding: 0 10px;
+  background-color: #FFF;
+  height: 700px;
 }
+
+.sidebar ul {
+  font-size: 15px;
+  margin: 20px 0;
+  padding: 0;
+}
+
+.sidebar ul li {
+  padding: 3px 0;
+}
+
+.sidebar #current-page {
+  background-color: black;
+}
+.sidebar #current-page a {
+  color: white;
+}
+
+#tagcloud {
+  text-align: center;
+}
+
+#tagcloud li {
+  display: inline;
+}
+
+#tagcloud .tagweight1 { font-size: 10px }
+#tagcloud .tagweight2 { font-size: 12px }
+#tagcloud .tagweight3 { font-size: 14px }
+#tagcloud .tagweight4 { font-size: 16px }
 
 #main-content {
+  background-color: #FFF;
   width: 720px;
   float:left;
+  height: 700px;
 }
 
 .error h2 {
   color: red
 }
 
+#main-portfolio {
+  margin: 10px;
+}
+
 figure  {
   width: 700px;
-  margin: 10px;
 }
 
 figure .elementcontainer {
@@ -62,6 +114,7 @@ figcaption {
   background-color: #d4dfdf;
   padding: 10px;
   height: 50px;
+  overflow-y: auto;
 }
 
 figcaption p:first-child {
@@ -70,6 +123,10 @@ figcaption p:first-child {
 
 figcaption p:last-child {
   margin-bottom: 0;
+}
+
+figcaption a {
+  text-decoration: underline;
 }
 
 .dot-nav {
@@ -91,6 +148,26 @@ figcaption p:last-child {
 .dot-nav li a {
   text-decoration: none;
   color: black;
+}
+
+.elementtags {
+  font-size: 13px;
+  margin: 10px 0;
+}
+
+.elementtags ul {
+  padding: 0;
+  display: inline;
+  font-size: 0; /* hack for missing support for white-space-collapse:discard */
+}
+
+.elementtags li {
+  font-size: 13px;
+  margin: 0 1px;
+  display: inline-block;
+  border: 1px #A4AFAF solid;
+  background-color: #D4DFDF;
+  padding: 2px 5px;
 }
 
 /* Utility */
