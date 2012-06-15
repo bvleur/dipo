@@ -97,7 +97,7 @@ class Updater
 
         $this->metadata[$file->getRelativePath()] = $group_metadata;
 
-        $this->total += count($group_metadata->getChild('elements')->getCount());
+        $this->total += $group_metadata->getChild('elements')->getCount();
       } catch (ParseException $e) {
         throw new Exception(array(
           'action' => 'scan-folders',
