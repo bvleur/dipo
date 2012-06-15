@@ -76,7 +76,7 @@ class ImageCreator
     $imagine = new $imagine_class();
 
     try {
-      $content_image = $imagine->open($content_file->__toString());
+      $image = $imagine->open($content_file->__toString());
     } catch (\Imagine\Exception\InvalidArgumentException $e) {
       throw new Exception(array(
         'action' => 'content-image',
@@ -85,17 +85,63 @@ class ImageCreator
       ));
     }
 
-    $size = $content_image->getSize();
+    $manipulated = false;
 
-    if ($this->maximum_box->contains($size)) {
-      /* No resizing needed. Copy the content */
+    /* Auto-rotate if needed */
+    $exif = @exif_read_data($content_file);
+    if ($exif !== false) {
+      if (array_key_exists('IFD0', $exif) && array_key_exists('Orientation', $exif['IFD0'])) {
+        $orientation = $exif['IFD0']['Orientation'];
+      } elseif (array_key_exists('Orientation', $exif)) {
+        $orientation = $exif['Orientation'];
+      }
+      if (isset($orientation) && $orientation !== 1) {
+        $manipulated = true;
+
+        /* Orientations according to: http://sylvana.net/jpegcrop/exif_orientation.html
+         *   1        2       3      4         5            6           7          8
+         *  888888  888888      88  88      8888888888  88                  88  8888888888
+         *  88          88      88  88      88  88      88  88          88  88      88  88
+         *  8888      8888    8888  8888    88          8888888888  8888888888          88
+         *  88          88      88  88
+         *  88          88  888888  888888
+         */
+        switch ($orientation) {
+        case 2:
+          $image->flipHorizontally();
+          break;
+        case 3:
+          $image->rotate(180);
+          break;
+        case 4:
+          $image->flipVertically();
+          break;
+        case 6:
+          $image->rotate(90);
+          break;
+        case 8:
+          $image->rotate(270);
+          break;
+        }
+      }
+    }
+
+    /* If the content file is bigger than the maximum size: resize it */
+    $size = $image->getSize();
+    if (!$this->maximum_box->contains($size)) {
+      $manipulated = true;
+      $image = $image->thumbnail($this->maximum_box);
+      $size = $image->getSize();
+    }
+
+    // TODO don't copy original if web_type is not content_type (even if no resize is needed)
+
+    /* Copy original if no manipulations are done or save manipulated otherwise */
+    if (!$manipulated) {
       $filesystem->copy($content_file, $web_filepath, true);
     } else {
-      /* The content file is bigger than the maximum size: resize it an save */
       $filesystem->mkdir(dirname($web_filepath));
-      $resized_image = $content_image->thumbnail($this->maximum_box);
-      $resized_image->save($web_filepath);
-      $size = $resized_image->getSize();
+      $image->save($web_filepath);
     }
 
     return array($size->getWidth(), $size->getHeight());
