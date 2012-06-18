@@ -33,6 +33,9 @@ tags:
 </ul>
 </div>
 
-<script>$('#main-portfolio').portfolioBrowser('{{ browsing.getElementId(element) }}');</script>
+<script>$(function() {
+  $('#main-portfolio').portfolioBrowser('{{ browsing.code|e('js')|e('html') }}', '{{ browsing.getElementId(element)|e('js')|e('html') }}');
+  });
+</script>
 </div>
 {% endblock %}
