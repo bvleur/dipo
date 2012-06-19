@@ -12,28 +12,7 @@
 
     var currentElement;
 
-    /* Multiple elements in the container need to overlap during the transition.
-     * Therefore elements need to be absolutely positioned in a relative positioned container.
-     * Absolute positioning however destroys the native CSS centering using display:table-cell and vertical-align:middle
-     * therefore we transform the elements into positioning with negative margins
-     */
-    function absoluteCenter(el) {
-      var child = el.children().first();
-      el.css({
-        'position': 'absolute',
-        'top': '50%',
-        'left': '50%',
-        'margin-left': -1 * (child.width() / 2),
-        'margin-top': -1 * (child.height() / 2)
-      });
-    }
-
-    viewContainer.css({'position': 'relative'});
-    absoluteCenter(current);
-
-    function generateURL(containerCode, id) {
-      return '/portfolio/' + encodeURIComponent(containerCode) + '/' +  encodeURIComponent(id);
-    }
+    /** MODEL **/
 
     function Container(code, data) {
       this.code = code;
@@ -63,20 +42,6 @@
       this.html = data.html;
     }
 
-    /* Get the staged (pre-loaded) element contents. If it isn't, stage it now
-     * by adding the HTML to the container */
-    Element.prototype.getStaged = function () {
-      if (this.staged)
-        return this.staged;
-
-      this.staged = $(this.html)
-        .css({'display': 'none'})
-        .appendTo(viewContainer);
-
-      absoluteCenter(this.staged);
-
-      return this.staged;
-    }
 
     function ContainerList() {
       this.containers = [];
@@ -98,9 +63,53 @@
 
     var containers = new ContainerList();
 
+    /** VIEW **/
+
+    /* Multiple elements in the container need to overlap during the transition.
+     * Therefore elements need to be absolutely positioned in a relative positioned container.
+     * Absolute positioning however destroys the native CSS centering using display:table-cell and vertical-align:middle
+     * therefore we transform the elements into positioning with negative margins
+     */
+    function absoluteCenter(el) {
+      var child = el.children().first();
+      el.css({
+        'position': 'absolute',
+        'top': '50%',
+        'left': '50%',
+        'margin-left': -1 * (child.width() / 2),
+        'margin-top': -1 * (child.height() / 2)
+      });
+    }
+
+    viewContainer.css({'position': 'relative'});
+    absoluteCenter(current);
+
+    function generateURL(containerCode, id) {
+      return '/portfolio/' + encodeURIComponent(containerCode) + '/' +  encodeURIComponent(id);
+    }
+
+    /* Get the staged (pre-loaded) element contents. If it isn't, stage it now
+     * by adding the HTML to the container */
+    var stage = [];
+    function getStaged(element) {
+      if (!stage[element.container.code])
+        stage[element.container.code] = [];
+
+      if (!stage[element.container.code][element.id]) {
+        var staged = $(element.html)
+          .css({'display': 'none'})
+          .appendTo(viewContainer);
+
+        absoluteCenter(staged);
+
+        stage[element.container.code][element.id] = staged;
+      }
+      return stage[element.container.code][element.id];
+    }
+
     /* Transition the current element to element with id "id" and update meta-data and navigation */
-    Element.prototype.show = function (noPushState) {
-      var staged = this.getStaged();
+    function showElement(element, noPushState) {
+      var staged = getStaged(element);
 
       /* Do not switch if the element to be shown is the same as the current */
       if (current.is(staged))
@@ -115,23 +124,23 @@
         preloadNextPrev();
       });
 
-      /* Update description */  
-      description.html(this.description || this.container.description);
+      /* Update description */
+      description.html(element.description || element.container.description);
 
       /* Update tags */
-      updateTags(this.tags)
+      updateTags(element.tags)
 
       /* Update navigation */
-      updateDotNav(this);
+      updateDotNav(element);
 
       /* Change the URL (ignore older browsers) */
       if (Modernizr.history && !noPushState) {
-        window.history.pushState({containerCode: this.container.code, id: this.id}, null,  generateURL(this.container.code, this.id));
+        window.history.pushState({containerCode: element.container.code, id: element.id}, null,  generateURL(element.container.code, element.id));
       }
 
       /* This element should now be considered current */
       current = staged;
-      currentElement = this;
+      currentElement = element;
     }
 
     function updateDotNav(element) {
@@ -145,10 +154,6 @@
         for (var i = 0; i < elements.length; i++) {
           var dot = $('<li><a href="' + generateURL(elements[i].container.code, elements[i].id) + '">o</a></li>');
           dot.data('element', elements[i]);
-          dot.click(function () {
-            $(this).data('element').show();
-            return false;
-          });
           dotNav.append(dot);
         }
       }
@@ -210,24 +215,28 @@
     /* Preload the previous and next elements by already requesting the element on stage */
     function preloadNextPrev() {
       if (currentElement.next) {
-        currentElement.next.getStaged();
+        getStaged(currentElement.next);
       }
       if (currentElement.previous) {
-        currentElement.previous.getStaged();
+        getStaged(currentElement.previous);
       }
     }
 
     function showByCodeAndId(containerCode, elementId, noPushState) {
       containers.withContainer(containerCode, function(container) {
-        container.getElement(elementId).show(noPushState);
+        showElement(container.getElement(elementId), noPushState);
       });
     }
 
     /* Make existing navigation elements in the page use this portfolio browser for switching */
     function attachToNavigation() {
-      dotNav.find('a').click(function (e) {
+      dotNav.find('a').each(function () {
         var id = decodeURIComponent($(this).attr('href'));
-        currentElement.container.getElement(id).show();
+        $(this).parent().data('element', currentElement.container.getElement(id));
+      });
+
+      dotNav.on('click', 'a', function () {
+        showElement($(this).parent().data('element'));
         return false;
       });
 
@@ -251,7 +260,9 @@
     /* Retrive the data for the current browsing set */
     containers.withContainer(initialContainerCode, function (container) {
       currentElement = container.getElement(initialId);
-      currentElement.staged = current;
+      stage[currentElement.container.code] = {};
+      stage[currentElement.container.code][currentElement.id] = current;
+
       window.history.replaceState({containerCode: initialContainerCode, id: initialId}, null);
 
       attachToNavigation();
