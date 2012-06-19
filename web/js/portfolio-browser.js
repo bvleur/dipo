@@ -84,6 +84,8 @@
     viewContainer.css({'position': 'relative'});
     absoluteCenter(current);
 
+    description.css('position', 'relative');
+
     function generateURL(containerCode, id) {
       return '/portfolio/' + encodeURIComponent(containerCode) + '/' +  encodeURIComponent(id);
     }
@@ -125,7 +127,10 @@
       });
 
       /* Update description */
-      description.html(element.description || element.container.description);
+      description.find('p').css('position', 'absolute').fadeOut(function () { $(this).remove(); });
+      var newDescription = $(element.description || element.container.description);
+      newDescription.first().filter('p').css('margin-top', '0'); // It's no longer first-child, so fake formatting
+      newDescription.appendTo(description).fadeIn();
 
       /* Update tags */
       updateTags(element.tags)
