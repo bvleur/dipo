@@ -305,7 +305,8 @@
       stage[currentElement.container.code] = {};
       stage[currentElement.container.code][currentElement.id] = current;
 
-      window.history.replaceState({containerCode: initialContainerCode, id: initialId}, null);
+      if (Modernizr.history)
+        window.history.replaceState({containerCode: initialContainerCode, id: initialId}, null);
 
       attachToNavigation();
       preloadNextPrev();
