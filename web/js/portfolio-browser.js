@@ -124,10 +124,13 @@
       });
 
       /* Update description */
-      description.find('p').css('position', 'absolute').fadeOut(function () { $(this).remove(); });
-      var newDescription = $(element.description || element.container.description);
-      newDescription.first().filter('p').css('margin-top', '0'); // It's no longer first-child, so fake formatting
-      newDescription.appendTo(description).fadeIn();
+      var newElementDescription = element.description || element.container.description;
+      if ((currentElement.description || currentElement.container.description) !== newElementDescription) {
+        description.find('p').css('position', 'absolute').fadeOut('fast', function () { $(this).remove(); });
+        var newDescription = $(newElementDescription);
+        newDescription.first().filter('p').css('margin-top', '0'); // It's no longer first-child, so fake formatting
+        newDescription.appendTo(description).fadeIn('slow');
+      }
 
       /* Update tags */
       updateTags(element.tags)
