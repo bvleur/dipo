@@ -89,6 +89,11 @@
     description.css('position', 'relative');
 
     function generateURL(containerCode, id) {
+      if (arguments[0] instanceof Element) {
+        containerCode = arguments[0].container.code;
+        id = arguments[0].id
+      }
+
       return '/portfolio/' + encodeURIComponent(containerCode) + '/' +  encodeURIComponent(id);
     }
 
@@ -142,7 +147,7 @@
 
       /* Change the URL (ignore older browsers) */
       if (Modernizr.history && !noPushState) {
-        window.history.pushState({containerCode: element.container.code, id: element.id}, null,  generateURL(element.container.code, element.id));
+        window.history.pushState({containerCode: element.container.code, id: element.id}, null,  generateURL(element));
       }
 
       /* This element should now be considered current */
@@ -166,7 +171,7 @@
         var elements = element.container.elements;
         dotNav.html('');
         for (var i = 0; i < elements.length; i++) {
-          var dot = $('<li><a href="' + generateURL(elements[i].container.code, elements[i].id) + '">o</a></li>');
+          var dot = $('<li><a href="' + generateURL(elements[i]) + '">o</a></li>');
           dot.find('a').data('element', elements[i]);
           dotNav.append(dot);
         }
@@ -179,13 +184,13 @@
     function updateNav(element) {
       if (element.previous) {
         previous.data('element', element.previous);
-        previous.attr('href', generateURL(element.previous.container.code, element.previous.id));
+        previous.attr('href', generateURL(element.previous));
       } else {
         previous.removeData('element');
       }
       if (element.next) {
         next.data('element', element.next);
-        next.attr('href', generateURL(element.next.container.code, element.next.id));
+        next.attr('href', generateURL(element.next));
       } else {
         next.removeData('element');
       }
