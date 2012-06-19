@@ -219,6 +219,18 @@ figcaption a {
   padding: 2px 5px;
 }
 
+.fb-like-hover {
+  background-color: #ECECEC;
+  float: right;
+  margin: 10px 0;
+  height: 17px;
+  padding: 2px 10px;
+  display: none; /* Depends on javascript, so only shown with it */
+}
+.fb-like-hover img {
+  float: right;
+}
+
 /* Utility */
 
 /* Clearfix from h5bp.com/q */

@@ -352,6 +352,18 @@
       preloadNextPrev();
     });
 
+    $('.fb-like-hover').hover(function() {
+      $(this).animate({height: '20px', width: '130px'});
+      $(this).find('img').fadeOut();
+      $(this).prepend('<div class="fb-like" data-href="' + window.location.protocol + '//' + window.location.hostname + generateURL(currentElement) + '" ' +
+        'data-send="false" data-layout="button_count" data-width="130" data-show-faces="false" data-font="arial"></div>');
+      FB.XFBML.parse(this);
+    }, function () {
+      $(this).animate({height: '17px', width: '16px'});
+      $(this).find('img').fadeIn();
+      $(this).find('.fb-like').fadeOut(function () {$(this).remove();});
+    }).show();;
+
   }; // fn.portfolioBrowser
 
 })(jQuery);
