@@ -104,6 +104,7 @@ a:hover {
 
 figure  {
   width: 700px;
+  position: relative;
 }
 
 figure .elementcontainer {
@@ -141,6 +142,36 @@ figcaption p:last-child {
 figcaption a {
   text-decoration: underline;
 }
+
+.previous, .next {
+  display: table;
+  position: absolute;
+  top: 223px;
+  background-color: #ECECEC;
+  height: 80px;
+  width: 30px;
+  opacity: 0.3;
+}
+
+.previous:hover, .next:hover {
+  opacity: 0.7;
+  text-decoration: none;
+}
+
+.previous span, .next span {
+  font-size: 40px;
+  font-weight: bold;
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+  text-shadow: 0 0 2px black;
+  color: white;
+}
+
+.next {
+  left: 672px;
+}
+
 
 .dot-nav {
   text-align: center;

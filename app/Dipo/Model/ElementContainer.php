@@ -42,6 +42,26 @@ abstract class ElementContainer
     return reset($this->_elements);
   }
 
+  public function getElementByIndex($index)
+  {
+    if ($index >= 0 && $index < count($this->_elements)) {
+      $ids = array_keys($this->_elements);
+      return $this->_elements[$ids[$index]];
+    }
+
+    return null;
+  }
+
+  public function getNextElement($element)
+  {
+    return $this->getElementByIndex($this->getIndexOfElement($element) + 1);
+  }
+
+  public function getPreviousElement($element)
+  {
+    return $this->getElementByIndex($this->getIndexOfElement($element) - 1);
+  }
+
   public function getIndexOfElement($element)
   {
     $id = $this->getElementId($element);

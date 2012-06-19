@@ -9,6 +9,8 @@
     var tagcontainer = this.find('.elementtags');
     var taglist = tagcontainer.find('ul');
     var current = viewContainer.find('.element');
+    var previous = this.find('.previous');
+    var next = this.find('.next');
 
     var currentElement;
 
@@ -136,8 +138,7 @@
       updateTags(element.tags)
 
       /* Update navigation */
-      updatePageNav(element);
-      updateDotNav(element);
+      updateNav(element);
 
       /* Change the URL (ignore older browsers) */
       if (Modernizr.history && !noPushState) {
@@ -166,13 +167,26 @@
         dotNav.html('');
         for (var i = 0; i < elements.length; i++) {
           var dot = $('<li><a href="' + generateURL(elements[i].container.code, elements[i].id) + '">o</a></li>');
-          dot.data('element', elements[i]);
+          dot.find('a').data('element', elements[i]);
           dotNav.append(dot);
         }
       }
 
       /* Mark current */
       dotNav.find('li').eq(element.idx).addClass('current');
+    }
+
+    function updateNav(element) {
+      previous.data('element', element.previous);
+      if (element.previous) {
+        previous.attr('href', generateURL(element.previous.container.code, element.previous.id));
+      }
+      next.data('element', element.next);
+      if (element.next) {
+        next.attr('href', generateURL(element.next.container.code, element.next.id));
+      }
+      updatePageNav(element);
+      updateDotNav(element);
     }
 
     function updateTags(elementTags) {
@@ -243,17 +257,34 @@
 
     /* Make existing navigation elements in the page use this portfolio browser for switching */
     function attachToNavigation() {
-      /* Initialize the "element" data value on the items in the dot-nav */
-      dotNav.find('a').each(function () {
+      /* Initialize the "element" data value on the items in the dot-nav and arrows */
+      dotNav.find('a').add(previous).add(next).each(function () {
         var id = decodeURIComponent($(this).attr('href'));
-        $(this).parent().data('element', currentElement.container.getElement(id));
+        if (id != '#') {
+          $(this).data('element', currentElement.container.getElement(id));
+        }
       });
 
       /* Hook up the links in the dot-nav to switch the element */
       dotNav.on('click', 'a', function () {
-        showElement($(this).parent().data('element'));
+        showElement($(this).data('element'));
         return false;
       });
+
+      previous.add(next).click(function () {
+        if ($(this).data('element')) {
+          showElement($(this).data('element'));
+        }
+        return false;
+      });
+
+      previous.add(next).hover(function () {
+        $(this).animate({opacity: 0.7});
+      }, function () {
+        $(this).animate({opacity: 0});
+      }
+      ).css({opacity: 0});
+
 
       /* Keyboard left and right arrows navigate previous and next */
       $(document).keydown(function(e){
