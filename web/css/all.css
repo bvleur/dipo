@@ -186,6 +186,7 @@ figcaption a {
 .dot-nav li {
   font-size: 16px;
   display: inline-block;
+  *display: inline; /* MSIE6 MSIE7 hack */
   padding: 0 10px;
 }
 
@@ -212,6 +213,7 @@ figcaption a {
   font-size: 13px;
   margin: 0 1px;
   display: inline-block;
+  *display: inline; /* MSIE6 MSIE7 hack */
   border: 1px #A4AFAF solid;
   background-color: #D4DFDF;
   padding: 2px 5px;
