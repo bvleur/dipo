@@ -118,11 +118,8 @@
         return;
 
       /* Cross-fade the new element in (and hide the old afterwards) */
-      staged.css({'display': 'block', 'opacity': 0});
-      staged.animate({'opacity': 1});
-
-      current.animate({'opacity': 0}, function () {
-        $(this).css({'display': 'none'});
+      staged.fadeIn();
+      current.fadeOut(function () {
         preloadNextPrev();
       });
 
@@ -235,16 +232,28 @@
 
     /* Make existing navigation elements in the page use this portfolio browser for switching */
     function attachToNavigation() {
+      /* Initialize the "element" data value on the items in the dot-nav */
       dotNav.find('a').each(function () {
         var id = decodeURIComponent($(this).attr('href'));
         $(this).parent().data('element', currentElement.container.getElement(id));
       });
 
+      /* Hook up the links in the dot-nav to switch the element */
       dotNav.on('click', 'a', function () {
         showElement($(this).parent().data('element'));
         return false;
       });
 
+      /* Keyboard left and right arrows navigate previous and next */
+      $(document).keydown(function(e){
+        if (e.keyCode == 37 && currentElement.previous) {
+            showElement(currentElement.previous);
+        } else if (e.keyCode == 39 && currentElement.next) {
+            showElement(currentElement.next);
+        }
+      });
+
+      /* Hook up the links in the global navigation to switch the element */
       portfolioNav.find('a').click(function (e) {
         portfolioNav.find('#current-page').removeAttr('id');
         $(this).parent().attr('id', 'current-page');
@@ -255,6 +264,7 @@
         return false;
       });
 
+      /* Hook up changing the history state to switch to the right element */
       if (Modernizr.history) {
         window.onpopstate = function (event) {
           showByCodeAndId(event.state.containerCode, event.state.id, true);
