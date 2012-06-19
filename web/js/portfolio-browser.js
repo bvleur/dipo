@@ -251,6 +251,25 @@
         } else if (e.keyCode == 39 && currentElement.next) {
             showElement(currentElement.next);
         }
+
+        var relative;
+        if (e.keyCode == 38) {
+          relative = -1;
+        } else if (e.keyCode == 40) {
+          relative = 1;
+        } else {
+          return;
+        }
+        var navSet = $('#current-page').parents('nav').find('li');
+        var newIndex = navSet.index($('#current-page')) + relative;
+        if (newIndex == navSet.length || newIndex == -1) {
+          var curNavIndex = portfolioNav.index($('#current-page').parents('nav').first());
+          portfolioNav.eq((curNavIndex + relative) % portfolioNav.length).find('a').eq(relative == -1 ? -1 : 0).click();
+        } else {
+          navSet.eq(newIndex).find('a').click();
+        }
+
+        return false;
       });
 
       /* Hook up the links in the global navigation to switch the element */
