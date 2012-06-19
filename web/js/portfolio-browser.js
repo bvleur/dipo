@@ -177,13 +177,17 @@
     }
 
     function updateNav(element) {
-      previous.data('element', element.previous);
       if (element.previous) {
+        previous.data('element', element.previous);
         previous.attr('href', generateURL(element.previous.container.code, element.previous.id));
+      } else {
+        previous.removeData('element');
       }
-      next.data('element', element.next);
       if (element.next) {
+        next.data('element', element.next);
         next.attr('href', generateURL(element.next.container.code, element.next.id));
+      } else {
+        next.removeData('element');
       }
       updatePageNav(element);
       updateDotNav(element);
