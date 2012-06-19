@@ -136,6 +136,7 @@
       updateTags(element.tags)
 
       /* Update navigation */
+      updatePageNav(element);
       updateDotNav(element);
 
       /* Change the URL (ignore older browsers) */
@@ -146,6 +147,13 @@
       /* This element should now be considered current */
       current = staged;
       currentElement = element;
+    }
+
+    function updatePageNav(element) {
+      if (element.container !== currentElement.container) {
+        portfolioNav.find('#current-page').removeAttr('id');
+        portfolioNav.find('a[href*="/' + element.container.code + '/"]').parent().attr('id', 'current-page');
+      }
     }
 
     function updateDotNav(element) {
@@ -276,10 +284,7 @@
       });
 
       /* Hook up the links in the global navigation to switch the element */
-      portfolioNav.find('a').click(function (e) {
-        portfolioNav.find('#current-page').removeAttr('id');
-        $(this).parent().attr('id', 'current-page');
-
+      portfolioNav.add(tagcontainer).on('click', 'a', function () {
         var uri = decodeURIComponent($(this).attr('href'));
         var parts = uri.match(/\/portfolio\/(.*)\/(.*)/);
         showByCodeAndId(parts[1], parts[2]);
