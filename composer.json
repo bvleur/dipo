@@ -14,11 +14,11 @@
   },
   "require": {
     "php" : ">=5.3.2",
-    "silex/silex" : "dev-master",
+    "silex/silex" : "1.1.*",
     "twig/twig" : "1.6.2",
-    "symfony/yaml": "2.1.*",
-    "symfony/filesystem": "2.1.*",
-    "symfony/finder": "2.1.*",
+    "symfony/yaml": "2.3.*",
+    "symfony/filesystem": "2.3.*",
+    "symfony/finder": "2.3.*",
     "imagine/imagine": "dev-master",
     "dflydev/markdown": "dev-master"
   }

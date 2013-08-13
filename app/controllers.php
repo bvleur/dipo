@@ -148,7 +148,7 @@ $app->get('/admin', function () use ($app) {
   return $app['twig']->render('admin.html.twig', array(
     'user' => $user
   ));
-})->middleware($must_be_logged_in);
+})->before($must_be_logged_in);
 
 $app->get('/admin/bijwerken', function () use ($app) {
   /* Start a new updater or continue with a running one */
@@ -185,9 +185,9 @@ $app->get('/admin/bijwerken', function () use ($app) {
       'is_done' => $updater->isDone(),
       'failure' => isset($failure) ? $failure->getDetails() : false
     ));
-})->middleware($must_be_logged_in);
+})->before($must_be_logged_in);
 
 $app->get('/admin/bijwerken/annuleren', function () use ($app) {
   $app['session']->remove('updater');
   return $app->redirect('/admin');
-})->middleware($must_be_logged_in);
+})->before($must_be_logged_in);
