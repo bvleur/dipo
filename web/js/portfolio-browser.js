@@ -295,8 +295,10 @@
       ).css({opacity: 0});
 
 
-      /* Keyboard left and right arrows navigate previous and next */
-      $(document).keydown(function(e){
+      /* Keyboard left and right arrows navigate previous and next
+       * and up and down navigate through sets
+       * */
+      $(document).keydown(function(e) {
         if (e.keyCode == 37 && currentElement.previous) {
             showElement(currentElement.previous);
         } else if (e.keyCode == 39 && currentElement.next) {
@@ -309,7 +311,7 @@
         } else if (e.keyCode == 40) {
           relative = 1;
         } else {
-          return;
+          return false;
         }
         var navSet = $('#current-page').parents('nav').find('li');
         var newIndex = navSet.index($('#current-page')) + relative;
