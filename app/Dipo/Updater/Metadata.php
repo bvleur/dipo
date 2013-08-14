@@ -65,6 +65,15 @@ class Metadata
   public function getMarkdownAsHtml($key, $default = null)
   {
     $value = $this->getRequiredValue($key, $default);
+
+    /* The MarkDown Parser returns a non-empty string for empty inputs which
+     * makes it hard to detect empty values in HTML
+     * Detect empty input and force return a empty string.
+     */
+    if (strlen(trim($value)) === 0) {
+        return '';
+    }
+
     // TODO Figure out error handling.
     $markdownParser = new \dflydev\markdown\MarkdownParser();
     return $markdownParser->transformMarkdown($value);
