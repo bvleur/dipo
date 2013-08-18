@@ -23,8 +23,38 @@
     "dflydev/markdown": "dev-master",
     "components/jquery": "1.9.*",
     "components/modernizr": "2.6.2",
-    "components/normalize.css": "2.*"
+    "components/normalize.css": "2.*",
+    "briancherne/jquery-hoverIntent": "7.0"
   },
+  "repositories": [
+    {
+      "type": "package",
+      "package": {
+        "name": "briancherne/jquery-hoverIntent",
+        "type": "component",
+        "version": "7.0",
+        "dist": {
+          "url": "https://github.com/briancherne/jquery-hoverIntent/archive/50f11356f87c96097b48879c1aa1cd994d9599b2.zip",
+          "type": "zip"
+        },
+        "source": {
+          "url": "https://github.com/briancherne/jquery-hoverIntent.git",
+          "type": "git",
+          "reference": "50f11356f87c96097b48879c1aa1cd994d9599b2"
+        },
+        "extra": {
+          "component": {
+            "scripts": [
+              "jquery.hoverIntent.js"
+            ]
+          }
+        },
+        "require": {
+          "robloach/component-installer": "*"
+        }
+      }
+    }
+  ],
   "config": {
     "component-dir": "web/components"
   }

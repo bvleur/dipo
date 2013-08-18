@@ -3,8 +3,34 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "878b46487dfcb3d804ae182d2ca509cf",
+    "hash": "7915c3a12b44fa68c160616fa48b944c",
     "packages": [
+        {
+            "name": "briancherne/jquery-hoverIntent",
+            "version": "7.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/briancherne/jquery-hoverIntent.git",
+                "reference": "50f11356f87c96097b48879c1aa1cd994d9599b2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://github.com/briancherne/jquery-hoverIntent/archive/50f11356f87c96097b48879c1aa1cd994d9599b2.zip",
+                "reference": null,
+                "shasum": null
+            },
+            "require": {
+                "robloach/component-installer": "*"
+            },
+            "type": "component",
+            "extra": {
+                "component": {
+                    "scripts": [
+                        "jquery.hoverIntent.js"
+                    ]
+                }
+            }
+        },
         {
             "name": "components/jquery",
             "version": "1.9.1",

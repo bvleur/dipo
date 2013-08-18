@@ -366,7 +366,7 @@
       preloadNextPrev();
     });
 
-    $('.fb-like-hover').hover(function() {
+    $('.fb-like-hover').hoverIntent(function() {
       $(this).animate({height: '20px', width: '130px'});
       $(this).find('img').fadeOut();
       $(this).prepend('<div class="fb-like" data-href="' + window.location.protocol + '//' + window.location.hostname + generateURL(currentElement) + '" ' +
