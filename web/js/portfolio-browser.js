@@ -301,8 +301,10 @@
       $(document).keydown(function(e) {
         if (e.keyCode == 37 && currentElement.previous) {
             showElement(currentElement.previous);
+            return false;
         } else if (e.keyCode == 39 && currentElement.next) {
             showElement(currentElement.next);
+            return false;
         }
 
         var relative;
@@ -311,7 +313,7 @@
         } else if (e.keyCode == 40) {
           relative = 1;
         } else {
-          return false;
+          return true;
         }
         var navSet = $('#current-page').parents('nav').find('li');
         var newIndex = navSet.index($('#current-page')) + relative;
