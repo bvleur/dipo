@@ -132,11 +132,18 @@
 
       /* Update description */
       var newElementDescription = element.description || element.container.description;
-      if ((currentElement.description || currentElement.container.description) !== newElementDescription) {
-        description.find('p').css('position', 'absolute').fadeOut('fast', function () { $(this).remove(); });
-        var newDescription = $(newElementDescription);
-        newDescription.first().filter('p').css('margin-top', '0'); // It's no longer first-child, so fake formatting
-        newDescription.appendTo(description).fadeIn('slow');
+      if (description.html() !== newElementDescription) {
+        var oldDescription = description
+          .clone()
+          .css({
+            position: 'absolute',
+            top: description.position().top,
+            left: description.position().left
+          })
+          .appendTo(description.parent())
+
+        description.html(newElementDescription);
+        oldDescription.fadeOut('fast', function () { $(this).remove(); });
       }
 
       /* Update tags */
