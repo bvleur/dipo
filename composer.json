@@ -20,6 +20,12 @@
     "symfony/filesystem": "2.3.*",
     "symfony/finder": "2.3.*",
     "imagine/imagine": "dev-master",
-    "dflydev/markdown": "dev-master"
+    "dflydev/markdown": "dev-master",
+    "components/jquery": "1.9.*",
+    "components/modernizr": "2.6.2",
+    "components/normalize.css": "2.*"
+  },
+  "config": {
+    "component-dir": "web/components"
   }
 }
