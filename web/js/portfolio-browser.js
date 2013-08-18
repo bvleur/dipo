@@ -2,6 +2,7 @@
   "use strict";
 
   $.fn.portfolioBrowser = function(initialContainerCode, initialId) {
+    var thiz = $(this);
     var dotNav = this.find('.dot-nav ul');
     var portfolioNav = $('#menu, #tagcloud');
     var viewContainer = this.find('.elementcontainer');
@@ -160,6 +161,8 @@
       /* This element should now be considered current */
       current = staged;
       currentElement = element;
+
+      thiz.trigger('elementchanged');
     }
 
     function updatePageNav(element) {
