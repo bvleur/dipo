@@ -8,6 +8,7 @@ class Group extends ElementContainer
   private $_code;
   private $_created_at;
   private $_name;
+  private $_containerSizeCode = 'default';
 
   public function __construct($code, $created_at, $name, $set_index = 1)
   {
@@ -50,6 +51,16 @@ class Group extends ElementContainer
   public function getDescription()
   {
     return $this->_description;
+  }
+
+  public function setContainerSizeCode($containerSizeCode)
+  {
+    $this->_containerSizeCode = $containerSizeCode;
+  }
+
+  public function getContainerSizeCode()
+  {
+    return $this->_containerSizeCode;
   }
 
   public function addElement($element)

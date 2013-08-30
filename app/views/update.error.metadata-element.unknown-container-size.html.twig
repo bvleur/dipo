@@ -1,0 +1,25 @@
+<h2>De houdergrootte voor "{{ failure.element }}" in <code>portfolio.yml</code> van groep "{{ failure.group }}" is onbekend</h2>
+
+<p>
+De opgegeven houdergrootte (<code>container-size</code>) is onbekend.
+</p>
+<p>
+Alleen houdergroottes die gedefinieerd zijn in het configuratie-bestand zijn kunnen worden gekozen. Op dit moment zijn dat:
+<p>
+<ul>
+{% for containerSizeCode in app['container_sizes']|keys %}
+<li>{{ containerSizeCode }}</li>
+{% endfor %}
+</ul>
+
+<section class="causes">
+Mogelijke oorzaken voor dit probleem zijn:
+<ul>
+  <li>De gewenste grootte "{{ failure.containerSizeCode }}" is nog niet gedefinieerd. Voeg het toe in het configuratie-bestand onder de instelling <code>container-sizes</code></li>
+  <li>De opgegeven grootte "{{ failure.containerSizeCode }}" bevat een typfout. Corrigeer deze.</li>
+</ul>
+</section>
+
+<p class="tip">
+Gebruik zoveel mogelijk kleine letters in de namen van houdergroottes.
+</p>

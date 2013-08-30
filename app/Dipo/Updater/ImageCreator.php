@@ -13,15 +13,17 @@ class ImageCreator
 
   private $content_path;
   private $web_path;
-  private $maximum_box;
+  private $container_boxes;
   private $imagine_driver;
 
-  public function __construct($content_path, $web_path, $maximum_width, $maximum_height, $imagine_driver)
+  public function __construct($content_path, $web_path, $container_sizes, $imagine_driver)
   {
     $this->content_path = $content_path;
     $this->web_path = $web_path;
     $this->imagine_driver = $imagine_driver;
-    $this->maximum_box = new \Imagine\Image\Box($maximum_width, $maximum_height);
+    $this->container_boxes = array_map(function ($container_size) {
+        return new \Imagine\Image\Box($container_size['width'], $container_size['height']);
+    }, $container_sizes);
   }
 
   private function getContentFile($group, $code)
@@ -68,7 +70,7 @@ class ImageCreator
     return array($web_filepath, $web_type);
   }
 
-  private function createWebFile($content_file, $web_filepath, $metadata)
+  private function createWebFile($content_file, $web_filepath, $metadata, $container_size_code)
   {
     $filesystem = new Filesystem();
 
@@ -125,12 +127,12 @@ class ImageCreator
         }
       }
     }
-
-    /* If the content file is bigger than the maximum size: resize it */
+    /* If the content file is bigger than the container: resize it */
+    $container_box = $this->container_boxes[$container_size_code];
     $size = $image->getSize();
-    if (!$this->maximum_box->contains($size)) {
+    if (!$container_box->contains($size)) {
       $manipulated = true;
-      $image = $image->thumbnail($this->maximum_box);
+      $image = $image->thumbnail($container_box);
       $size = $image->getSize();
     }
 
@@ -147,26 +149,49 @@ class ImageCreator
     return array($size->getWidth(), $size->getHeight());
   }
 
-  private function addMetadata($image, $metadata)
+  private function addMetadata($image, $metadata, $container_size_code)
   {
     try {
       if ($metadata->has('description')) {
         $image->setDescription($metadata->getMarkdownAsHtml('description'));
+      }
+      if ($metadata->has('container-size')) {
+        $image->setContainerSizeCode($container_size_code);
       }
     } catch (Exception $e) {
       throw $e->addDetails(array('action' => 'metadata-element'));
     }
   }
 
+  public function getContainerSizeCode($group, $metadata)
+  {
+    /* Prefer to use a container size defined specifically for this image */
+    if ($metadata->has('container-size')) {
+      $container_size_code = $metadata->getString('container-size');
+      if (!array_key_exists($container_size_code, $this->container_boxes)) {
+          throw new Exception(array(
+            'action' => 'metadata-element',
+            'error' => 'unknown-container-size',
+            'containerSizeCode' => $container_size_code
+          ));
+      }
+      return $container_size_code;
+    }
+
+    /* Use the container size of this group otherwise */
+    return $group->getContainerSizeCode();
+  }
+
   public function create($group, $code, $metadata)
   {
     try {
+      $container_size_code = $this->getContainerSizeCode($group, $metadata);
       $content_file = $this->getContentFile($group, $code);
       list($web_filepath, $web_type) = $this->getWebFilepathAndType($content_file, $group, $code, $metadata);
-      list($width, $height) = $this->createWebFile($content_file, $web_filepath, $metadata);
+      list($width, $height) = $this->createWebFile($content_file, $web_filepath, $metadata, $container_size_code);
 
       $image = new \Dipo\Model\Image($code, $width, $height, $web_type);
-      $this->addMetadata($image, $metadata);
+      $this->addMetadata($image, $metadata, $container_size_code);
 
       return $image;
     } catch (Exception $e) {

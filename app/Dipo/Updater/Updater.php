@@ -29,6 +29,7 @@ class Updater
   /* configuration */
   private $content_path;
   private $web_path;
+  private $container_sizes;
 
   /* processing public state */
   private $completed;
@@ -46,11 +47,12 @@ class Updater
   /* model creator */
   private $image_creator;
 
-  public function __construct($content_path, $web_path, $maximum_width, $maximum_height, $imagine_driver)
+  public function __construct($content_path, $web_path, $container_sizes, $imagine_driver)
   {
     $this->content_path = $content_path;
     $this->web_path = $web_path;
-    $this->image_creator = new ImageCreator($content_path, $web_path, $maximum_width, $maximum_height, $imagine_driver);
+    $this->container_sizes = $container_sizes;
+    $this->image_creator = new ImageCreator($content_path, $web_path, $container_sizes, $imagine_driver);
   }
 
   public function isDone()
@@ -147,7 +149,6 @@ class Updater
         $this->element_index = 0;
       }
 
-
       /* Process element */
       $elements_metadata = $group_metadata->getChild('elements');
       $group_element_codes = $elements_metadata->getKeys();
@@ -200,6 +201,17 @@ class Updater
         $metadata->getInteger('set', 1)
       );
       $group->setDescription($metadata->getMarkdownAsHtml('description'));
+
+      /* Determine the container size code for this group */
+      $container_size_code = $metadata->getString('container-size', 'default');
+      if (!array_key_exists($container_size_code, $this->container_sizes)) {
+          throw new Exception(array(
+            'error' => 'unknown-container-size',
+            'containerSizeCode' => $container_size_code
+          ));
+      }
+      $group->setContainerSizeCode($container_size_code);
+
     } catch (Exception $e) {
       throw $e->addDetails(array(
         'action' => 'metadata-group',

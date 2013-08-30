@@ -61,6 +61,7 @@ $app->get('/portfolio/{container}/browser-data', function ($container) use ($app
 
     $element_data = array(
       'id' => $container->getElementId($element),
+      'containerSizeCode' => $element->getContainerSizeCode(),
       'html' => $html,
       'tags' => array()
     );
@@ -157,8 +158,7 @@ $app->get('/admin/bijwerken', function () use ($app) {
     $updater = new \Dipo\Updater\Updater(
       $app['content_path'],
       $app['web_portfolio_path'],
-      $app['maximum_width'],
-      $app['maximum_height'],
+      $app['container_sizes'],
       $app['updater.imagine_driver']
     );
     $app['session']->set('updater', $updater);

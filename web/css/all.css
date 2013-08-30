@@ -113,10 +113,21 @@ figure  {
 }
 
 figure .elementcontainer {
-  height: 600px;
   display: table;
   width: 100%;
   text-align: center;
+
+  -webkit-transition: all 0.3s ease 0s;
+  transition: all 0.3s ease 0s;
+
+}
+
+figure .element-container-size-default {
+  height: 600px;
+}
+
+figure .element-container-size-long {
+  height: 800px;
 }
 
 figure .element {

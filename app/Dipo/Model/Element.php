@@ -5,6 +5,7 @@ abstract class Element
 {
 
   private $_code;
+  private $_container_size_code;
   private $_width;
   private $_height;
   private $_description;
@@ -65,6 +66,20 @@ abstract class Element
       return $this->_description;
 
     return $this->_group->getDescription();
+  }
+
+  public function setContainerSizeCode($containerSizeCode)
+  {
+    $this->_container_size_code = $containerSizeCode;
+  }
+
+  public function getContainerSizeCode()
+  {
+    if ($this->_container_size_code !== null) {
+      return $this->_container_size_code;
+    }
+
+    return $this->_group->getContainerSizeCode();
   }
 
 }

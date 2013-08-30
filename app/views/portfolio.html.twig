@@ -4,7 +4,7 @@
 {% block content %}
 <div id="main-portfolio">
 <figure>
-<div class="elementcontainer">
+<div class="elementcontainer element-container-size-{{ element.containerSizeCode }}">
 {% include "element.#{element.getElementType}.html.twig" %}
 </div>
 {% set previous = browsing.getPreviousElement(element) %}

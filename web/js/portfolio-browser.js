@@ -42,6 +42,7 @@
       this.id = data.id;
       this.description = data.description;
       this.tags = data.tags;
+      this.containerSizeCode = data.containerSizeCode;
       this.html = data.html;
     }
 
@@ -124,6 +125,14 @@
       /* Do not switch if the element to be shown is the same as the current */
       if (current.is(staged))
         return;
+
+      /* Update container size class */
+      if (currentElement.containerSizeCode != element.containerSizeCode) {
+        viewContainer
+          .removeClass('element-container-size-' + currentElement.containerSizeCode)
+          .addClass('element-container-size-' + element.containerSizeCode)
+          ;
+      }
 
       /* Cross-fade the new element in (and hide the old afterwards) */
       staged.fadeIn();
