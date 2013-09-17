@@ -1,0 +1,20 @@
+{% extends "layout.error.config.html.twig" %}
+
+{% block error %}
+<h3>Ingestelde start-groep of start-tag is onjuist ingesteld.</h3>
+
+<p>
+De start-groep of start-tag (<code>start_at</code>) is onjuist ingesteld.
+</p>
+
+<section class="causes">
+Mogelijke oorzaak voor dit probleem is:
+<ul>
+  <li>De instelling bevat een typefout</li>
+</ul>
+</section>
+
+<p class="tip">
+Neem de configuratie-structuur voor deze instelling over uit het meegeleverde configuratie-voorbeeld in het bestand: <code>config.php.dist</code>
+</p>
+{% endblock %}

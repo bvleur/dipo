@@ -19,6 +19,18 @@ $app['users'] = array(
   array('username' => '', 'password_hash' => '')
 );
 
-/* Instead of a dedicated start page you can open at a specific portfolio group or tag
+/* Instead of a dedicated start page you can open at a either:
+ * - a specific portfolio group or tag:
+ *    array('container' => 'some-container-code')
+ * - a random container:
+ *    array('random' => 'group')
+ *   or
+ *    array('random' => 'tag')
+ *   or
+ *    array('random' => array('group', 'tag'))
+ *
+ *  You can opt-out groups of the random start by adding the following in it's metadata (portfolio.yml):
+ *    include-in-random-start: no
+ *
  */
-// $app['start_group_or_tag'] = 'some-group-code-name';
+// $app['start_at'] = array('container' => 'some-container-code');

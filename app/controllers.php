@@ -12,14 +12,48 @@ function config_error($app, $variable, $error_code) {
 }
 
 $app->match('/', function () use ($app) {
-  if (isset($app['start_group_or_tag'])) {
-    $container = $app['portfolio']->getContainerByCode($app['start_group_or_tag']);
-    if ($container === null) {
-      return config_error($app, 'start_group_or_tag', 'invalid');
-    }
-    return $app->redirect('/portfolio/' . $container->getCode() . '/' . $container->getFirstElement()->getCode());
+  if (!isset($app['start_at'])) {
+    return $app['twig']->render('index.html.twig');
   }
-  return $app['twig']->render('index.html.twig');
+
+  $config_value = $app['start_at'];
+  $key = key($config_value);
+  $value = current($config_value);
+
+  /* Check if start_at configuration value is an array with one element */
+  if (!is_array($config_value) || count($value) !== 1) {
+    return config_error($app, 'start_at', 'not-array');
+  }
+
+  switch ($key) {
+    case 'container':
+      $container = $app['portfolio']->getContainerByCode($value);
+      if ($container === null) {
+        return config_error($app, 'start_at', 'not-found');
+      }
+      break;
+    case 'random':
+      $random_containers = array();
+      $random_container_types = (array)$value;
+      foreach ($random_container_types as $type) {
+        switch ($type) {
+          case 'group':
+            $random_containers += $app['portfolio']->getGroupsForRandomStart();
+            break;
+          case 'tag':
+            $random_containers += $app['portfolio']->getTagsSorted();
+            break;
+        }
+      }
+
+      if (count($random_containers) == 0) {
+        return config_error($app, 'start_at', 'no-random-candidates');
+      }
+
+      $container = $random_containers[array_rand($random_containers)];
+      break;
+  }
+  return $app->redirect('/portfolio/' . $container->getCode() . '/' . $container->getFirstElement()->getCode());
 });
 
 /**

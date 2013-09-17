@@ -62,6 +62,23 @@ class Metadata
     return new \DateTime($value);
   }
 
+  public function getFriendlyBoolean($key, $default = null)
+  {
+    $value = strtolower($this->getRequiredValue($key, $default));
+    if (in_array($value, array('yes', 'y', 'true', '1'))) {
+      return true;
+    } elseif (in_array($value, array('no', 'n', 'false', '0'))) {
+      return false;
+    }
+
+    /* Value could not be matched as positive or negative value */
+    throw new Exception(array(
+      'error' => 'invalid-boolean-value',
+      'key' => $key,
+      'data_type' => $type
+    ));
+  }
+
   public function getMarkdownAsHtml($key, $default = null)
   {
     $value = $this->getRequiredValue($key, $default);

@@ -1,0 +1,17 @@
+{% extends "layout.error.config.html.twig" %}
+
+{% block error %}
+<h3>Geen willekeurige start-groep of start-tag gevonden.</h3>
+
+<p>
+De instelling voor start-groep of start-tag (<code>start_at</code>) staat ingesteld op willekeurig, maar er kan geen groep of tag worden gekozen.
+</p>
+
+<section class="causes">
+Mogelijke oorzaak voor dit probleem is:
+<ul>
+  <li>Er zijn nog geen groepen en tags aangemaakt. Maak eerst een groep aan met afbeeldingen en werk het portfolio bij.</li>
+  <li>Alle groepen hebben in <code>portfolio.yml</code> aangegeven dat ze niet meegenomen mogen worden in de selectie van een willekeurige groep (<code>include-in-random-start: no</code>).</li>
+</ul>
+</section>
+{% endblock %}

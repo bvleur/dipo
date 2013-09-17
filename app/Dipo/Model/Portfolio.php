@@ -30,6 +30,13 @@ class Portfolio
     return $groups;
   }
 
+  public function getGroupsForRandomStart()
+  {
+    return array_filter($this->_groups, function ($group) {
+        return $group->getIncludeInRandomStart();
+      });
+  }
+
   public function getContainerByCode($code)
   {
     if (array_key_exists($code, $this->_groups))

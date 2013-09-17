@@ -201,6 +201,7 @@ class Updater
         $metadata->getInteger('set', 1)
       );
       $group->setDescription($metadata->getMarkdownAsHtml('description'));
+      $group->setIncludeInRandomStart($metadata->getFriendlyBoolean('include-in-random-start', true));
 
       /* Determine the container size code for this group */
       $container_size_code = $metadata->getString('container-size', 'default');
@@ -211,7 +212,6 @@ class Updater
           ));
       }
       $group->setContainerSizeCode($container_size_code);
-
     } catch (Exception $e) {
       throw $e->addDetails(array(
         'action' => 'metadata-group',

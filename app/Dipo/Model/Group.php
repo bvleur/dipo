@@ -9,6 +9,7 @@ class Group extends ElementContainer
   private $_created_at;
   private $_name;
   private $_containerSizeCode = 'default';
+  private $_include_in_random_start = true;
 
   public function __construct($code, $created_at, $name, $set_index = 1)
   {
@@ -61,6 +62,16 @@ class Group extends ElementContainer
   public function getContainerSizeCode()
   {
     return $this->_containerSizeCode;
+  }
+
+  public function setIncludeInRandomStart($include)
+  {
+    $this->_include_in_random_start = $include;
+  }
+
+  public function getIncludeInRandomStart()
+  {
+    return $this->_include_in_random_start;
   }
 
   public function addElement($element)
