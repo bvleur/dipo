@@ -142,7 +142,7 @@ class Updater
       $group_code = $this->metadata_group_codes[$this->group_index];
       $group_metadata = $this->metadata[$group_code];
 
-      /* Create group (if we are a the first element) */
+      /* Create group (if we are at the first element) */
       if (!isset($this->element_index)) {
         $this->group = $this->createGroup($group_code, $group_metadata);
         $this->portfolio->addGroup($this->group);
