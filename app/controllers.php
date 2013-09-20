@@ -70,7 +70,9 @@ $app->match('sidebar', function () use ($app) {
 $app->match('tagcloud', function () use ($app) {
   $tags = $app['portfolio']->getTagsSorted();
   $maximum_element_count = array_reduce($tags, function ($max, $tag) { return max($tag->getElementCount(),  $max); }, 0);
+  $minimum_element_count = array_reduce($tags, function ($min, $tag) { return min($tag->getElementCount(),  $min); }, $maximum_element_count);
   return $app['twig']->render('tagcloud.html.twig', array(
+    'minimum_element_count' => $minimum_element_count,
     'maximum_element_count' => $maximum_element_count,
     'tags' => $tags,
     'browsing_code' => $app['request']->get('browsing_code', '')
