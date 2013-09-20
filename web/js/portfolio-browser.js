@@ -287,7 +287,7 @@
     /* Make existing navigation elements in the page use this portfolio browser for switching */
     function attachToNavigation() {
       /* Initialize the "element" data value on the items in the dot-nav and arrows */
-      dotNav.find('a').add(previous).add(next).each(function () {
+      dotNav.find('a').add(controls).each(function () {
         var id = decodeURIComponent($(this).attr('href'));
         if (id != '#') {
           $(this).data('element', currentElement.container.getElement(id));
@@ -300,7 +300,7 @@
         return false;
       });
 
-      previous.add(next).click(function () {
+      controls.click(function () {
         if ($(this).data('element')) {
           showElement($(this).data('element'));
         }
