@@ -12,6 +12,7 @@
     var current = viewContainer.find('.element');
     var previous = this.find('.previous');
     var next = this.find('.next');
+    var controls = previous.add(next);
 
     var currentElement;
 
@@ -306,13 +307,33 @@
         return false;
       });
 
-      previous.add(next).hover(function () {
-        $(this).animate({opacity: 0.7});
-      }, function () {
-        $(this).animate({opacity: 0});
-      }
-      ).css({opacity: 0});
+      var hideControlsTimeout;
+      var controlsShown = false;
 
+      function showControls() {
+        if (!controlsShown) {
+          controlsShown = true;
+          controls.stop().animate({opacity: 1.0}, 200);
+        }
+
+        clearTimeout(hideControlsTimeout);
+      }
+
+      function showControlsHideDelayed() {
+        showControls();
+
+        hideControlsTimeout = setTimeout(function () {
+          controlsShown = false;
+          controls.animate({opacity: 0});
+        }, 1000);
+      }
+
+      viewContainer.on('mousemove', showControlsHideDelayed);
+      controls.on('mousemove', showControls);
+      controls.on('mouseleave', showControlsHideDelayed);
+
+      /* Show the controls for a moment them on page load */
+      showControlsHideDelayed();
 
       /* Keyboard left and right arrows navigate previous and next
        * and up and down navigate through sets
