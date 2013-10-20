@@ -408,6 +408,46 @@
       $(this).find('.fb-like').fadeOut(function () {$(this).remove();});
     }).show();;
 
-  }; // fn.portfolioBrowser
+    /* Enable slide-show mode which will show the next element until the end of the container. 
+     * Select the first element of a random container afterwards
+     */
+    function startAutomaticAdvance(intervalMsec) {
+      function nextOrRandom() {
+        if (currentElement.next) {
+          showElement(currentElement.next);
+        } else {
+          portfolioNav.find('a').eq(Math.floor(Math.random() * portfolioNav.find('a').length)).click();
+        }
+      }
 
+      /* Enable the automatic advancement now */
+      var autoInterval = setInterval(nextOrRandom, intervalMsec);
+      var autoEnabled = true;
+
+      /* Toggle automatic advancement with ESC-key */
+      $(document).keyup(function(e) {
+        if (e.keyCode == 27) {
+          if (autoEnabled) {
+            clearInterval(autoInterval);
+          } else {
+            autoInterval = setInterval(nextOrRandom, intervalMsec);
+          }
+          autoEnabled = !autoEnabled;
+        }
+      });
+    }
+
+    /* Start a to advance automatically when the URL-hash starts with "auto".
+     * The slide show interval can be set by formatting the hash as "auto=3" for 3 second delay
+     */
+    if (window.location.hash.substring(0,5) == '#auto') {
+      var intervalSec = 2;
+      if (window.location.hash.length > 6 && window.location.hash.substring(5,6) === "=") {
+        intervalSec = parseInt(window.location.hash.substring(6));
+      }
+
+      startAutomaticAdvance(intervalSec * 1000);
+    }
+
+  }; // fn.portfolioBrowser
 })(jQuery);
