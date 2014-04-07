@@ -11,6 +11,7 @@ abstract class Element
   private $_description;
   private $_group;
   private $_tags = array();
+  private $_link_areas = array();
 
   public function __construct($code, $width, $height)
   {
@@ -80,6 +81,22 @@ abstract class Element
     }
 
     return $this->_group->getContainerSizeCode();
+  }
+
+  public function addLinkArea($top, $left, $width, $height, $href)
+  {
+    $this->_link_areas[] = array(
+        'top' => $top,
+        'left' => $left,
+        'width' => $width,
+        'height' => $height,
+        'href' => $href
+    );
+  }
+
+  public function getLinkAreas()
+  {
+    return $this->_link_areas;
   }
 
 }

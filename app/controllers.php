@@ -99,6 +99,7 @@ $app->get('/portfolio/{container}/browser-data', function ($container) use ($app
       'id' => $container->getElementId($element),
       'containerSizeCode' => $element->getContainerSizeCode(),
       'html' => $html,
+      'link_areas' => $element->getLinkAreas(),
       'tags' => array()
     );
 

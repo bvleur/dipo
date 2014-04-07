@@ -172,6 +172,13 @@ class Updater
         $element->addTag($tag);
       }
 
+      /* Add link areas */
+      $link_areas = $element_metadata->getArray('link-areas', array());
+      foreach ($link_areas as $link_area) {
+        // TODO verify all attributes
+        $element->addLinkArea($link_area['top'], $link_area['left'], $link_area['width'], $link_area['height'], $link_area['href']);
+      }
+
       $this->completed++;
 
       /* Continue with next element */

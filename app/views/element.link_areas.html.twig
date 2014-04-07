@@ -1,0 +1,4 @@
+{% for link_area in element.getLinkAreas() %}
+<a class="link-area" style="top: {{ link_area.top }}px; left: {{ link_area.left }}px; width: {{ link_area.width }}px; height: {{ link_area.height }}px;"  href="{{ link_area.href }}">
+</a>
+{% endfor %}

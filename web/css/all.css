@@ -134,9 +134,14 @@ figure .element {
   display: table-cell;
   vertical-align: middle;
   margin: 0 auto;
+  position: relative;
 }
 figure .element img {
   border: 1px solid silver;
+}
+
+figure .element .link-area {
+  position: absolute;
 }
 
 figcaption {
