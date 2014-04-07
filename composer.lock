@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "402c124777adb67e47173fbf4b2779bb",
+    "hash": "297280e98640bfca600744b4670c3be4",
     "packages": [
         {
             "name": "briancherne/jquery-hoverIntent",
@@ -1105,6 +1105,33 @@
                 "templating"
             ],
             "time": "2013-12-06 07:47:10"
+        },
+        {
+            "name": "video-js/video-js",
+            "version": "4.3.0",
+            "dist": {
+                "type": "zip",
+                "url": "http://www.videojs.com/downloads/video-js-4.3.0.zip",
+                "reference": null,
+                "shasum": null
+            },
+            "require": {
+                "robloach/component-installer": "*"
+            },
+            "type": "component",
+            "extra": {
+                "component": {
+                    "scripts": [
+                        "video.js"
+                    ],
+                    "styles": [
+                        "video-js.css"
+                    ],
+                    "files": [
+                        "video-js.swf"
+                    ]
+                }
+            }
         }
     ],
     "packages-dev": [

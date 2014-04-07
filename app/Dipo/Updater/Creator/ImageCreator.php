@@ -1,58 +1,27 @@
 <?php
-namespace Dipo\Updater;
+namespace Dipo\Updater\Creator;
 
-use Symfony\Component\Finder\Finder;
 use Symfony\Component\Filesystem\Filesystem;
+use Dipo\Updater\Exception;
 
-class ImageCreator
+class ImageCreator extends ElementCreator
 {
 
   private static $content_to_web_types = array(
       'tiff' => 'jpeg'
     );
 
-  private $content_path;
-  private $web_path;
   private $container_boxes;
   private $imagine_driver;
 
   public function __construct($content_path, $web_path, $container_sizes, $imagine_driver)
   {
-    $this->content_path = $content_path;
-    $this->web_path = $web_path;
+    parent::__construct($content_path, $web_path, $container_sizes);
+
     $this->imagine_driver = $imagine_driver;
     $this->container_boxes = array_map(function ($container_size) {
         return new \Imagine\Image\Box($container_size['width'], $container_size['height']);
     }, $container_sizes);
-  }
-
-  private function getContentFile($group, $code)
-  {
-    /* Automatically determine extension of file */
-    $content_path = $this->content_path . '/'. $group->getCode();
-
-    $finder = new Finder();
-    $finder->in($content_path)->depth(0)->name('/^' . $code . '\..*/');
-
-    $files = $finder->getIterator();
-    $files->rewind();
-    $content_file = $files->current();
-
-    if ($content_file === NULL)
-      throw new Exception(array(
-        'action' => 'content-image',
-        'error' => 'file-missing'
-      ));
-
-    $files->next();
-    if ($files->valid()) {
-      throw new Exception(array(
-        'action' => 'content-image',
-        'error' => 'multiple-files'
-      ));
-    }
-
-    return $content_file;
   }
 
   private function getWebFilepathAndType($content_file, $group, $code, $metadata)
@@ -149,57 +118,18 @@ class ImageCreator
     return array($size->getWidth(), $size->getHeight());
   }
 
-  private function addMetadata($image, $metadata, $container_size_code)
-  {
-    try {
-      if ($metadata->has('description')) {
-        $image->setDescription($metadata->getMarkdownAsHtml('description'));
-      }
-      if ($metadata->has('container-size')) {
-        $image->setContainerSizeCode($container_size_code);
-      }
-    } catch (Exception $e) {
-      throw $e->addDetails(array('action' => 'metadata-element'));
-    }
+  protected function getElementTypeCode() {
+    return 'image';
   }
 
-  public function getContainerSizeCode($group, $metadata)
+  protected function createElement($group, $code, $metadata, $content_file, $container_size_code)
   {
-    /* Prefer to use a container size defined specifically for this image */
-    if ($metadata->has('container-size')) {
-      $container_size_code = $metadata->getString('container-size');
-      if (!array_key_exists($container_size_code, $this->container_boxes)) {
-          throw new Exception(array(
-            'action' => 'metadata-element',
-            'error' => 'unknown-container-size',
-            'containerSizeCode' => $container_size_code
-          ));
-      }
-      return $container_size_code;
-    }
+    list($web_filepath, $web_type) = $this->getWebFilepathAndType($content_file, $group, $code, $metadata);
+    list($width, $height) = $this->createWebFile($content_file, $web_filepath, $metadata, $container_size_code);
 
-    /* Use the container size of this group otherwise */
-    return $group->getContainerSizeCode();
-  }
+    $image = new \Dipo\Model\Image($code, $width, $height, $web_type);
 
-  public function create($group, $code, $metadata)
-  {
-    try {
-      $container_size_code = $this->getContainerSizeCode($group, $metadata);
-      $content_file = $this->getContentFile($group, $code);
-      list($web_filepath, $web_type) = $this->getWebFilepathAndType($content_file, $group, $code, $metadata);
-      list($width, $height) = $this->createWebFile($content_file, $web_filepath, $metadata, $container_size_code);
-
-      $image = new \Dipo\Model\Image($code, $width, $height, $web_type);
-      $this->addMetadata($image, $metadata, $container_size_code);
-
-      return $image;
-    } catch (Exception $e) {
-      throw $e->addDetails(array(
-        'group' => $group->getCode(),
-        'element' => $code
-      ));
-    }
+    return $image;
   }
 
 }
