@@ -24,7 +24,8 @@
     "components/jquery": "~1.10",
     "components/modernizr": "2.6.2",
     "components/normalize.css": "~2.1",
-    "briancherne/jquery-hoverIntent": "7.0"
+    "briancherne/jquery-hoverIntent": "7.0",
+    "video-js/video-js": "4.3.0"
   },
   "repositories": [
     {
@@ -46,6 +47,34 @@
           "component": {
             "scripts": [
               "jquery.hoverIntent.js"
+            ]
+          }
+        },
+        "require": {
+          "robloach/component-installer": "*"
+        }
+      }
+    },
+    {
+      "type": "package",
+      "package": {
+        "name": "video-js/video-js",
+        "type": "component",
+        "version": "4.3.0",
+        "dist": {
+          "url": "http://www.videojs.com/downloads/video-js-4.3.0.zip",
+          "type": "zip"
+        },
+        "extra": {
+          "component": {
+            "scripts": [
+              "video.js"
+            ],
+            "styles": [
+              "video-js.css"
+            ],
+            "files": [
+              "video-js.swf"
             ]
           }
         },

@@ -4,6 +4,7 @@ namespace Dipo\Updater;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Yaml\Exception\ParseException;
+use Dipo\Updater\Creator\ImageCreator;
 
 /**
  * Updates the portfolio:
