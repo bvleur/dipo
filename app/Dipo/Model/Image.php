@@ -12,9 +12,9 @@ class Image extends Element
 
   private $image_type;
 
-  public function __construct($width, $height, $description, $image_type)
+  public function __construct($code, $width, $height, $image_type)
   {
-    parent::__construct($width, $height, $description);
+    parent::__construct($code, $width, $height);
     $this->image_type = $image_type;
   }
 

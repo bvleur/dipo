@@ -15,7 +15,7 @@ abstract class ElementCreator
   {
     $this->content_path = $content_path;
     $this->web_path = $web_path;
-    $this->container_sizs = $container_sizes;
+    $this->container_sizes = $container_sizes;
   }
 
   protected function getContentFile($group, $code)

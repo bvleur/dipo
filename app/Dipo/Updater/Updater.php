@@ -5,6 +5,7 @@ use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Dipo\Updater\Creator\ImageCreator;
+use Dipo\Updater\Creator\HTMLCreator;
 
 /**
  * Updates the portfolio:
@@ -47,6 +48,7 @@ class Updater
 
   /* model creator */
   private $image_creator;
+  private $html_creator;
 
   public function __construct($content_path, $web_path, $container_sizes, $imagine_driver)
   {
@@ -54,6 +56,7 @@ class Updater
     $this->web_path = $web_path;
     $this->container_sizes = $container_sizes;
     $this->image_creator = new ImageCreator($content_path, $web_path, $container_sizes, $imagine_driver);
+    $this->html_creator = new HTMLCreator($content_path, $web_path, $container_sizes);
   }
 
   public function isDone()
@@ -156,7 +159,17 @@ class Updater
       $element_code = $group_element_codes[$this->element_index];
       $element_metadata = $elements_metadata->getChild($element_code);
 
-      $element = $this->image_creator->create($this->group, $element_code, $element_metadata);
+      $element_type = $element_metadata->getString('type', 'image');
+
+      switch ($element_type) {
+        case 'image':
+            $element = $this->image_creator->create($this->group, $element_code, $element_metadata);
+            break;
+
+        case 'html':
+            $element = $this->html_creator->create($this->group, $element_code, $element_metadata);
+            break;
+      }
       $this->group->addElement($element);
 
       /* Add tags */
