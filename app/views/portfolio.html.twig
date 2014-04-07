@@ -4,11 +4,11 @@
 {% block content %}
 <div id="main-portfolio">
 <figure>
-<div class="elementcontainer element-container-size-{{ element.containerSizeCode }}">
-{% include "element.#{element.getElementType}.html.twig" %}
-</div>
 {% set previous = browsing.getPreviousElement(element) %}
 {% set next = browsing.getNextElement(element) %}
+<div class="elementcontainer element-container-size-{{ element.containerSizeCode }} {% if previous == null %}showing-first{% endif %} {% if next == null %}showing-last{% endif %} ">
+{% include "element.#{element.getElementType}.html.twig" %}
+</div>
 <a class="previous" href="{% if previous != null %}{{ browsing.getElementId(previous)|url_encode }}{%else %}#{% endif %}"><span>&lt;</span></a>
 <a class="next" href="{% if next != null %}{{ browsing.getElementId(next)|url_encode }}{% else %}#{% endif %}"><span>&gt;</span></a>
 

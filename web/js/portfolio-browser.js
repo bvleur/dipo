@@ -135,6 +135,11 @@
           ;
       }
 
+      /* Update container classes about element container sequence position */
+      viewContainer.toggleClass('showing-first', typeof element.previous == 'undefined');
+      viewContainer.toggleClass('showing-last', typeof element.next == 'undefined');
+
+
       /* Cross-fade the new element in (and hide the old afterwards) */
       staged.fadeIn();
       current.fadeOut(function () {
