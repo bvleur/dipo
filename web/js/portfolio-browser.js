@@ -179,7 +179,7 @@
       current = staged;
       currentElement = element;
 
-      thiz.trigger('elementchanged');
+      thiz.trigger('elementchanged', [generateURL(element)]);
     }
 
     function updatePageNav(element) {
