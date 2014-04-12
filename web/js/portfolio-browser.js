@@ -93,8 +93,10 @@
 
     function generateURL(containerCode, id) {
       if (arguments[0] instanceof Element) {
+        /* Note: The order of these string assignments is important. If
+         * assigning containerCode first, it messes up arguments[0] in IE8 */
+        id = arguments[0].id;
         containerCode = arguments[0].container.code;
-        id = arguments[0].id
       }
 
       return '/portfolio/' + encodeURIComponent(containerCode) + '/' +  encodeURIComponent(id);
