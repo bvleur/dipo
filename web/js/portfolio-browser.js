@@ -379,6 +379,7 @@
         var uri = decodeURIComponent($(this).attr('href'));
         var parts = uri.match(/\/portfolio\/(.*)\/(.*)/);
         showByCodeAndId(parts[1], parts[2]);
+        showControlsHideDelayed();
         return false;
       });
 
