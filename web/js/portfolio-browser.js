@@ -332,7 +332,7 @@
         hideControlsTimeout = setTimeout(function () {
           controlsShown = false;
           controls.animate({opacity: 0});
-        }, 1000);
+        }, 2000);
       }
 
       viewContainer.on('mousemove', showControlsHideDelayed);
