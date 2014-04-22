@@ -60,14 +60,14 @@ $app->match('/', function () use ($app) {
  * BROWSE PORTFOLIO
  */
 
-$app->match('sidebar', function () use ($app) {
+$app->match('sidebar', function (Request $request) use ($app) {
   return $app['twig']->render('sidebar.html.twig', array(
     'portfolio_groups' => $app['portfolio']->getGroupsSorted(),
-    'browsing_code' => $app['request']->get('browsing_code', '')
+    'browsing_code' => $request->query->get('browsing_code', '')
   ));
 });
 
-$app->match('tagcloud', function () use ($app) {
+$app->match('tagcloud', function (Request $request) use ($app) {
   $tags = $app['portfolio']->getTagsSorted();
   $maximum_element_count = array_reduce($tags, function ($max, $tag) { return max($tag->getElementCount(),  $max); }, 0);
   $minimum_element_count = array_reduce($tags, function ($min, $tag) { return min($tag->getElementCount(),  $min); }, $maximum_element_count);
@@ -75,7 +75,7 @@ $app->match('tagcloud', function () use ($app) {
     'minimum_element_count' => $minimum_element_count,
     'maximum_element_count' => $maximum_element_count,
     'tags' => $tags,
-    'browsing_code' => $app['request']->get('browsing_code', '')
+    'browsing_code' => $request->query->get('browsing_code', '')
   ));
 });
 
@@ -149,10 +149,10 @@ $app->get('/portfolio/{container}/{element}', function ($container, $element) us
 /**
  * ADMIN PORTFOLIO
  */
-$app->get('/login', function () use ($app) {
+$app->get('/login', function (Request $request) use ($app) {
   /* TODO Replace with a form-based login. Can't reliably log out with http basic auth */
-  $username = $app['request']->server->get('PHP_AUTH_USER', false);
-  $password = $app['request']->server->get('PHP_AUTH_PW');
+  $username = $request->server->get('PHP_AUTH_USER', false);
+  $password = $request->server->get('PHP_AUTH_PW');
 
   /* Find the user by username (and assign to $user if found) */
   foreach ($app['users'] as $u)
