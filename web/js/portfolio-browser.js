@@ -449,7 +449,7 @@
      * The slide show interval can be set by formatting the hash as "auto=3" for 3 second delay
      */
     if (window.location.hash.substring(0,5) == '#auto') {
-      var intervalSec = 2;
+      var intervalSec = 5;
       if (window.location.hash.length > 6 && window.location.hash.substring(5,6) === "=") {
         intervalSec = parseInt(window.location.hash.substring(6));
       }
