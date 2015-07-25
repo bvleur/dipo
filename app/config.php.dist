@@ -10,6 +10,10 @@ ini_set('display_errors', 1);
 /* Title of the website (used in HTML <title> and otherwise naming your site)*/
 $app['title'] = 'My Digital Portfolio';
 
+/* Public URL at which this site can be accessed (used when supplying URLs to
+ * Facebook) */
+$app['base_url'] = 'http://suzannedezwart.nl';
+
 /* Define users that can login to the application.
  *
  * You can generate a password hash by running "generate-password-hash.php"

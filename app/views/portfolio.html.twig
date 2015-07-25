@@ -1,6 +1,15 @@
 {% extends layout %}
 {% block browsing_code browsing.code %}
 
+{% block meta_opengraph %}
+<meta property="og:url" content="{{ app.base_url }}{{ app.request.basepath }}/portfolio/{{ element.group.code }}/{{ element.code|url_encode }}">
+<meta property="og:type" content="website">
+<meta property="og:title" content="{{ element.group.name }} — {{ app.title }}">
+<meta property="og:site_name" content="{{ app.title }}">
+<meta property="og:description" content="{{ element.description|striptags }}">
+{% include "element.#{element.getElementType}.meta_opengraph.html.twig" ignore missing %}
+{% endblock %}
+
 {% block content %}
 <div id="main-portfolio">
 <figure>
