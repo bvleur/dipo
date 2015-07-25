@@ -36,3 +36,7 @@ $app['users'] = array(
 // $app['start_at'] = array('container' => 'some-container-code');
 
 $app['facebook_app_id'] = '12345';
+
+/* Optional: Show a facebook Follow Button for this (facebook-)URL in the
+ * sidebar */
+$app['facebook_sidebar_follow'] = 'https://facebook.com/zuck';

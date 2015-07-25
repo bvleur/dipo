@@ -79,6 +79,10 @@ a:hover {
   color: white;
 }
 
+#facebook-sidebar-follow {
+  margin-left: 5px;
+}
+
 #tagcloud {
   text-align: center;
 }

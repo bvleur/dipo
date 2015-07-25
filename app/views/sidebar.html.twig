@@ -12,4 +12,7 @@
   <li {% if browsing_code == group.code %}id="current-page"{% endif %}><a href="/portfolio/{{ group.code }}/{{ group.getFirstElement.code }}">{{ group.name }}</a></li>
 {% endfor %}
 </ul>
+{% if app.facebook_sidebar_follow is defined %}
+<div id="facebook-sidebar-follow" class="fb-follow" data-href="{{ app.facebook_sidebar_follow }}" data-layout="button" data-show-faces="false"></div>
+{% endif %}
 </nav>
