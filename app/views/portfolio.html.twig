@@ -33,9 +33,11 @@
 <figcaption>{{ element.description|raw }}</figcaption>
 </figure>
 
+{% if app.facebook_element_like %}
 <div class="fb-like-hover">
 <img src="/images/fb-like-gray.png" width="16" height="15">
 </div>
+{% endif %}
 
 <div class="elementtags cf" {% if element.tags|length == 0 %}style="display: none"{% endif %}>
 tags:

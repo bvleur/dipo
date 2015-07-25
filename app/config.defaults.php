@@ -19,3 +19,5 @@ $app['updater.imagine_driver'] = 'Imagick'; // or Gmagick. Imagine also supports
 $app['updater.processing_step_seconds'] = 10;
 
 $app['title'] = 'My Digital Portfolio';
+
+$app['facebook_element_like'] = true;
