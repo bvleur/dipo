@@ -141,7 +141,8 @@ $app->get('/portfolio/{container}/{element}', function ($container, $element) us
   return $app['twig']->render('portfolio.html.twig', array(
     'browsing' => $container,
     'index' => $container->getIndexOfElement($element),
-    'element' => $element
+    'element' => $element,
+    'facebookAppId' => $app['facebook_app_id']
   ));
 })->convert('container', array($app['portfolio'], 'getContainerByCode'));
 
