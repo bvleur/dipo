@@ -11,6 +11,8 @@ function config_error($app, $variable, $error_code) {
   );
 }
 
+$app["twig"]->addGlobal( 'facebookAppId', $app['facebook_app_id']);
+
 $app->match('/', function () use ($app) {
   if (!isset($app['start_at'])) {
     return $app['twig']->render('index.html.twig');
@@ -141,8 +143,7 @@ $app->get('/portfolio/{container}/{element}', function ($container, $element) us
   return $app['twig']->render('portfolio.html.twig', array(
     'browsing' => $container,
     'index' => $container->getIndexOfElement($element),
-    'element' => $element,
-    'facebookAppId' => $app['facebook_app_id']
+    'element' => $element
   ));
 })->convert('container', array($app['portfolio'], 'getContainerByCode'));
 
