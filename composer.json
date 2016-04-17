@@ -15,7 +15,7 @@
   "require": {
     "php" : ">=5.3.3",
     "silex/silex" : "~1.1",
-    "twig/twig" : "~1.15",
+    "twig/twig" : "~1.15.1.0",
     "symfony/yaml": "~2.3",
     "symfony/filesystem": "~2.3",
     "symfony/finder": "~2.3",
