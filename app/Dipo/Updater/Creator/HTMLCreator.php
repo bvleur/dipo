@@ -1,8 +1,6 @@
 <?php
 namespace Dipo\Updater\Creator;
 
-use Symfony\Component\Filesystem\Filesystem;
-use Dipo\Updater\Exception;
 
 class HTMLCreator extends ElementCreator
 {
