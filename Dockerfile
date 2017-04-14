@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y libmagickwand-6.q16-dev --no-install-re
 RUN docker-php-ext-install exif
 RUN docker-php-ext-install zip
 
-RUN curl https://getcaddy.com | bash -s filemanager
+RUN curl https://getcaddy.com | bash -s filemanager,jwt
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin/ --filename=composer
 

@@ -2,7 +2,15 @@
   tls off
   root /srv/web
   fastcgi / 127.0.0.1:9000 php
+
+  jwt /admin/filemanager
+
+  filemanager /admin/filemanager {
+    show content/
+  }
+
   rewrite {
+    if {path} not_match ^\/admin/filemanager
     to {path} {path}/ /index.php
   }
 }

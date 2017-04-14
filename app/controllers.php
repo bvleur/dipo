@@ -1,6 +1,8 @@
 <?php
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Cookie;
+use Firebase\JWT\JWT;
 
 function config_error($app, $variable, $error_code) {
   return $app['twig']->render('error.config.' . $variable . '.' . $error_code . '.html.twig',
@@ -187,9 +189,18 @@ $must_be_logged_in = function (Request $request) use ($app) {
 
 $app->get('/admin', function () use ($app) {
   $user = $app['session']->get('user');
-  return $app['twig']->render('admin.html.twig', array(
+
+  $response = new Response($app['twig']->render('admin.html.twig', array(
     'user' => $user
-  ));
+  )));
+
+  $jwt_secret = getenv('JWT_SECRET');
+  if ($jwt_secret !== false) {
+      $jwt_token = JWT::encode(array('exp' => time() + 3600), $jwt_secret);
+      $response->headers->setCookie(new Cookie('jwt_token', $jwt_token));
+  }
+
+  return $response;
 })->before($must_be_logged_in);
 
 $app->get('/admin/bijwerken', function () use ($app) {
