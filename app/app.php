@@ -24,8 +24,12 @@ $app->register(new Silex\Provider\HttpFragmentServiceProvider());
 $app->register(new Silex\Provider\TwigServiceProvider(), array('twig.path' => $views_paths));
 
 $app['portfolio'] = $app->share(function ($app) {
-  $database_file = file($app['web_portfolio_path'] . '/database.php');
-  // TODO Handle errors (missing database, damaged file)
+  $database_path = $app['web_portfolio_path'] . '/database.php';
+  if (!file_exists($database_path)) {
+      return  new \Dipo\Model\Portfolio();
+  }
+  $database_file = file($database_path);
+  // TODO Handle errors (damaged file)
   $portfolio = unserialize(base64_decode($database_file[1]));
   return $portfolio;
 });

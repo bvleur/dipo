@@ -1,8 +1,10 @@
 <nav id="tagcloud" class="sidebar">
 <ul>
+{% if tags is not empty %}
 {% set min_weight = 1 %}
 {% set max_weight = 4 %}
 {% set multiplier = (max_weight - min_weight)/(maximum_element_count - minimum_element_count) %}
+{% endif %}
 
 {% for tag in tags %}
 <li class="tagweight{{ (min_weight + (tag.getElementCount() - minimum_element_count) * multiplier)|number_format(0) }}" {% if browsing_code == tag.code %}id="current-page"{% endif %}>
