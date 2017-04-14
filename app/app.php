@@ -14,13 +14,14 @@ if (file_exists($custom_config_path)) {
 }
 
 /* Register the Twig Template Engine and use a global layout template */
+$views_paths = array(__DIR__ . '/views');
+$custom_views_path = __DIR__ . '/../custom/views';
+if (is_dir($custom_views_path)) {
+    array_unshift($views_paths, $custom_views_path);
+}
+
 $app->register(new Silex\Provider\HttpFragmentServiceProvider());
-$app->register(new Silex\Provider\TwigServiceProvider(), array(
-  'twig.path' => array(
-    __DIR__ . '/../custom/views',
-    __DIR__ . '/views'
-  )
-));
+$app->register(new Silex\Provider\TwigServiceProvider(), array('twig.path' => $views_paths));
 
 $app['portfolio'] = $app->share(function ($app) {
   $database_file = file($app['web_portfolio_path'] . '/database.php');

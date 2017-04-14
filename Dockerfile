@@ -14,6 +14,8 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 WORKDIR /srv
 
+ENV COMPOSER_ALLOW_SUPERUSER 1
+
 COPY composer.json composer.lock ./
 RUN composer install --no-scripts --no-autoloader
 

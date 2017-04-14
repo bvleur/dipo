@@ -4,6 +4,7 @@ build:
 start:
 	docker run --rm -d -p 8080:2015 --name dipo \
 		-v ${PWD}/content:/srv/content \
+		-v ${PWD}/custom:/srv/custom \
 		-v ${PWD}/web/portfolio-content:/srv/web/portfolio-content \
 		dipo
 
