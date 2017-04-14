@@ -11,7 +11,9 @@ function config_error($app, $variable, $error_code) {
   );
 }
 
-$app["twig"]->addGlobal( 'facebookAppId', $app['facebook_app_id']);
+if (isset($app['facebook_app_id'])) {
+    $app["twig"]->addGlobal('facebookAppId', $app['facebook_app_id']);
+}
 
 $app->match('/', function () use ($app) {
   if (!isset($app['start_at'])) {
