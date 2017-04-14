@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y libmagickwand-6.q16-dev --no-install-re
 && pecl install imagick \
 && echo "extension=imagick.so" > /usr/local/etc/php/conf.d/ext-imagick.ini
 
+RUN docker-php-ext-install exif
 RUN docker-php-ext-install zip
 
 RUN curl https://getcaddy.com | bash -s filemanager
