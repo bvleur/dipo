@@ -1,10 +1,8 @@
-/app/config.php
 /log/*
 /vendor/
 /composer.phar
 /web/portfolio-content/*
 /content/*
 /custom/*
-/custom/custom.css
 /web/css/custom.css
 /web/components

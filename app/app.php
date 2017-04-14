@@ -8,7 +8,10 @@ $app = new Silex\Application();
 
 /* Load the local configuration */
 require_once __DIR__ . '/config.defaults.php';
-require_once __DIR__ . '/config.php';
+$custom_config_path = __DIR__ . '/../custom/config.php';
+if (file_exists($custom_config_path)) {
+    include_once $custom_config_path;
+}
 
 /* Register the Twig Template Engine and use a global layout template */
 $app->register(new Silex\Provider\HttpFragmentServiceProvider());
