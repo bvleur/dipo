@@ -1,0 +1,8 @@
+:2015 {
+  tls off
+  root /srv/web
+  fastcgi / 127.0.0.1:9000 php
+  rewrite {
+    to {path} {path}/ /index.php
+  }
+}
