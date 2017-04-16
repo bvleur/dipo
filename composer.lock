@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "03da77a78b4ab4c48f57e784eaec9c8f",
+    "content-hash": "327401c7e8e21043ec682b1c5d29a5a7",
     "packages": [
         {
             "name": "briancherne/jquery-hoverIntent",
